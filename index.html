@@ -272,6 +272,36 @@ button:hover {
                 img.remove();  // Removes the image after animation
             }, 1000);
         }
+
+        // For mouse events on PC
+document.addEventListener('click', function(e) {
+    createFlyingImage(e);
+});
+
+// For touch events on mobile
+document.addEventListener('touchstart', function(e) {
+    createFlyingImage(e);
+});
+
+function createFlyingImage(event) {
+    // Create and position the image based on the event
+    let img = document.createElement("img");
+    img.src = "IMG_8904.JPG";
+    img.classList.add('flying-img');  // Optional: Add class for styling
+    document.body.appendChild(img);
+}
+function createFlyingImage(event) {
+    let img = document.createElement("img");
+    img.src = "IMG_8904.JPG";
+    img.classList.add('flying-img');
+    document.body.appendChild(img);
+
+    // Remove the image after 2 seconds
+    setTimeout(function() {
+        img.remove();
+    }, 2000);
+}
+
     </script>
     
 
