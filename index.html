@@ -219,6 +219,28 @@ button:hover {
 </head>
 <body>
     <script>
+        
+        function createFlyingImage(x, y) {
+    let img = document.createElement("img");
+    img.src = "IMG_8904.JPG";  // Ensure the path is correct
+    console.log("Image source: ", img.src); // Check if the image path is correct
+    img.classList.add("flying-img");
+
+    img.style.left = `${x - 40}px`;  // Adjusts image position so it's centered
+    img.style.top = `${y - 40}px`;
+
+    document.body.appendChild(img);
+
+    setTimeout(() => {
+        img.style.transform = "translateY(-150px) scale(0.5)";  // Moves the image up and shrinks it
+        img.style.opacity = "0";  // Fade-out effect
+    }, 50);
+
+    setTimeout(() => {
+        img.remove();  // Removes the image after animation
+    }, 1000);
+}
+
         document.getElementById("clickButton").addEventListener("click", (event) => {
             if (!clickCooldown) {
                 clickCooldown = true;
