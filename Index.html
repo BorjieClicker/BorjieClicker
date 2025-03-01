@@ -1,0 +1,867 @@
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borjie Clicker – Ultimate Edition</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #1e1e1e, #333);
+  color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Stats */
+h1 { font-weight: 600; font-size: 2.5rem; margin-bottom: 20px; }
+.counter, .rebirthCounter, .rank { font-size: 2rem; margin-bottom: 10px; }
+
+/* Buttons */
+.btn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+button {
+  padding: 12px 18px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.upgrade-button { background: #4CAF50; color: white; }
+.rebirth-button { background: #FF4500; color: white; }
+.rebirth-button:hover { background: #FF6347; }
+
+/* Reset Button */
+.reset-button {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: #FF0000;
+  color: white;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.reset-button:hover { background: #FF4444; }
+
+/* Rank Info */
+.rank-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Floating Click Animation */
+.floating-image {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-size: cover;
+  opacity: 1;
+  animation: floatUp 1.5s ease-out forwards;
+}
+@keyframes floatUp {
+  0% { transform: scale(0.8) translateY(0); opacity: 1; }
+  50% { transform: scale(1.2) translateY(-50px); opacity: 0.9; }
+  100% { transform: scale(1) translateY(-120px); opacity: 0; }
+}
+
+/* Small Borjie Animations */
+.flying-img {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+  bottom: 10px;
+  opacity: 1;
+  animation: fadeOut 3s ease-out forwards;
+}
+
+.borjie-small {
+        position: absolute;
+        width: 80px;  /* You can adjust this size */
+        height: auto;
+        pointer-events: none;
+        transition: transform 1s ease-out, opacity 1s ease-out;
+    }
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* Upgrade Button - Improved Hover Effect */
+button {
+  padding: 12px 18px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.4s ease-in-out;
+}
+.leaderboard {
+  position: absolute;
+  top: 50px; /* Adjust as needed */
+  right: 20px; /* Moves it to the right */
+  width: 300px;
+  padding: 10px;
+  background: #222;
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+
+.leaderboard-entry {
+  padding: 5px 0;
+  border-bottom: 1px solid #444;
+}
+
+
+button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Rebirth Button Hover */
+.rebirth-button:hover {
+  background: #FF6347;
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(255, 99, 71, 0.4);
+}
+
+
+/* Click Button */
+.click-button {
+  width: 180px;
+  height: 180px;
+  margin-top: 25px;
+  border-radius: 50%;
+  background-image: url('IMG_8904.JPG');
+  background-size: cover;
+  cursor: pointer;
+}
+.click-button:active {
+  transform: scale(0.95);
+}
+
+/* Example CSS for scroll effects */
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('your-background-image.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  will-change: transform;
+}
+
+.scroll-fade {
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.scroll-fade.hidden {
+  opacity: 0;
+}
+
+/* Smooth Transition for Admin Panel */
+.admin-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #222;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  text-align: center;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.admin-panel.show {
+  display: block;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.admin-panel.hide {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+
+</style>
+</head>
+<body>
+    <script>
+        document.getElementById("clickButton").addEventListener("click", (event) => {
+            if (!clickCooldown) {
+                clickCooldown = true;
+                count += clickPower * multiplier;
+                document.getElementById("count").textContent = count;
+                localStorage.setItem('clickCount', count);
+                createFlyingImage(event.clientX, event.clientY);  // Add the flying image effect
+                setTimeout(() => { clickCooldown = false; }, 100);
+            }
+        });
+    
+        // Flying Image Animation (Moves up from the click location)
+        function createFlyingImage(x, y) {
+            let img = document.createElement("img");
+            img.src = "IMG_8904.JPG";  // Your image path
+            img.classList.add("flying-img");
+    
+            img.style.left = `${x - 40}px`;  // Adjusts image position so it's centered
+            img.style.top = `${y - 40}px`;
+    
+            document.body.appendChild(img);
+    
+            setTimeout(() => {
+                img.style.transform = "translateY(-150px) scale(0.5)";  // Moves the image up and shrinks it
+                img.style.opacity = "0";  // Fade-out effect
+            }, 50);
+    
+            setTimeout(() => {
+                img.remove();  // Removes the image after animation
+            }, 1000);
+        }
+    </script>
+    
+
+<h1>Borjie Clicker</h1>
+<div class="rebirthCounter">Rebirths: <span id="rebirths">0</span></div>
+<div class="counter">Clicks: <span id="count">0</span></div>
+
+
+<!-- Rank Display with "!" Button -->
+<div class="rank-container">
+    <div class="rank">Rank: <span id="rankTitle">Clanky Clicker</span></div>
+    <button class="info-button" id="infoButton">!</button>
+  </div>
+  
+  <!-- Rank Info Modal -->
+  <div class="modal" id="infoModal">
+    <h2>Rank Info</h2>
+    <p>Clanky Clicker: 0+ Clicks</p>
+    <p>Amateur Clicker: 1,000+ Clicks</p>
+    <p>Special Spammer: 5,000+ Clicks</p>
+    <p>Advanced Yapper: 25,000+ Clicks</p>
+    <p>Borjie Bonker: 50,000+ Clicks</p>
+    <p>Borjie Baiter: 1,000,000+ Clicks</p>
+    <button id="closeInfoButton">Close</button>
+  </div>
+  
+  <!-- CSS for Modal -->
+  <style>
+  .modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #222;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+  .modal.active { display: block; }
+  
+  .info-button {
+    background: #FFA500;
+    color: white;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  }
+  .info-button:hover { background: #FFC04D; }
+  </style>
+  
+  <!-- JavaScript for Modal Functionality -->
+  <script>
+  document.getElementById("infoButton").addEventListener("click", () => {
+      document.getElementById("infoModal").classList.add("active");
+  });
+  document.getElementById("closeInfoButton").addEventListener("click", () => {
+      document.getElementById("infoModal").classList.remove("active");
+  });
+  </script>
+<!-- Admin Login Button -->
+<button class="admin-button" id="adminLogin">Admin</button>
+
+<!-- Admin Panel (Hidden by Default) -->
+<div id="adminPanel" class="admin-panel">
+    <h2>Admin Controls</h2>
+    <button class="admin-boost" onclick="giveClicks(1000)">+1,000 Clicks</button>
+    <button class="admin-boost" onclick="giveClicks(10000)">+10,000 Clicks</button>
+    <button class="admin-boost" onclick="giveClicks(100000)">+100,000 Clicks</button>
+    <button class="admin-boost" onclick="giveClicks(1000000)">+1,000,000 Clicks</button>
+    <button class="admin-reset" onclick="resetGame()">Reset Everything</button>
+    <button class="close-admin" onclick="closeAdminPanel()">Close</button>
+</div>
+
+<div class="leaderboard"></div>
+
+
+<!-- CSS (Admin Panel & Buttons) -->
+<style>
+.admin-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #007BFF;
+  color: white;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: block;
+}
+.admin-button:hover { background: #339BFF; }
+
+.admin-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #222;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  text-align: center;
+  display: none;
+}
+
+.admin-boost, .admin-reset, .close-admin {
+  display: block;
+  margin: 10px auto;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+}
+
+.admin-boost { background: #FFD700; color: black; font-weight: bold; }
+.admin-boost:hover { background: #FFC700; }
+
+.admin-reset {
+  background: #FF0000;
+  color: white;
+}
+.admin-reset:hover { background: #FF4444; }
+
+.close-admin {
+  background: #888;
+  color: white;
+}
+.close-admin:hover { background: #bbb; }
+
+/* Enhanced Floating Animation */
+.floating-image {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-size: cover;
+  opacity: 1;
+  animation: floatUp 2s ease-out forwards, rotateImage 2s ease-out forwards;
+}
+.rank {
+  transition: opacity 0.3s ease, transform 0.5s ease;
+}
+
+.rank.updated {
+  opacity: 0;
+  transform: scale(1.2);
+}
+
+.rank.updated.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.img_8904 {
+  position: absolute;
+  top: -100px; /* Start off-screen */
+  width: 50px; /* Adjust size */
+  height: auto;
+  animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+
+
+@keyframes floatUp {
+  0% { transform: scale(0.8) translateY(0); opacity: 1; }
+  50% { transform: scale(1.2) translateY(-60px); opacity: 0.9; }
+  100% { transform: scale(1) translateY(-120px); opacity: 0; }
+}
+
+@keyframes rotateImage {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes bouncyFall {
+  0% {
+    transform: translateY(0) scale(1, 1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(80vh) scale(1.1, 0.9);
+  }
+  75% {
+    transform: translateY(85vh) scale(0.9, 1.1);
+  }
+  90% {
+    transform: translateY(90vh) scale(1.05, 0.95);
+  }
+  100% {
+    transform: translateY(100vh) scale(1, 1);
+    opacity: 0;
+  }
+}
+
+.img_8904 {
+  position: absolute;
+  top: -100px;
+  width: 50px;
+  animation: bouncyFall 3s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+}
+@keyframes swirlingFall {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: translateX(-50px) translateY(30vh) rotate(45deg);
+  }
+  50% {
+    transform: translateX(50px) translateY(60vh) rotate(-45deg);
+  }
+  75% {
+    transform: translateX(-30px) translateY(85vh) rotate(30deg);
+  }
+  100% {
+    transform: translateX(0) translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+.img_8904 {
+  position: absolute;
+  top: -100px;
+  width: 50px;
+  animation: swirlingFall 4s ease-in-out forwards;
+}
+
+@keyframes ufoDrop {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(20px) scale(1.05);
+  }
+  50% {
+    transform: translateY(0) scale(0.95);
+  }
+  80% {
+    transform: translateY(90vh) scale(1.1);
+  }
+  100% {
+    transform: translateY(100vh) scale(1);
+    opacity: 0;
+  }
+}
+
+.img_8904 {
+  position: absolute;
+  top: -100px;
+  width: 50px;
+  animation: ufoDrop 3s ease-in forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(10%);
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.leaderboard-entry {
+  animation: slideIn 0.6s ease-in-out;
+}
+@keyframes crownGlow {
+  0% {
+    text-shadow: 0 0 5px gold;
+  }
+  50% {
+    text-shadow: 0 0 15px gold;
+  }
+  100% {
+    text-shadow: 0 0 5px gold;
+  }
+}
+
+.leaderboard-entry:first-child {
+  color: gold;
+  font-weight: bold;
+  animation: crownGlow 1s infinite alternate;
+}
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+.confetti {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  background: hsl(calc(360 * var(--rand)), 100%, 50%);
+  animation: confettiFall 2s ease-out;
+}
+@keyframes hoverFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.button:hover {
+  animation: hoverFloat 0.5s ease-in-out infinite alternate;
+}
+@keyframes scrollUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.leaderboard {
+  overflow: hidden;
+}
+
+.leaderboard-entry {
+  animation: scrollUp 0.6s ease-in-out;
+}
+
+
+
+
+
+</style>
+
+<!-- JavaScript (Admin Functionality) -->
+<script>
+
+function updateRank(newRank) {
+  const rankElement = document.getElementById('rankTitle');
+  rankElement.classList.add('updated');
+  setTimeout(() => {
+    rankElement.textContent = newRank;
+    rankElement.classList.add('active');
+  }, 300); // Add delay before text change
+}
+
+
+document.getElementById("adminLogin").addEventListener("click", () => {
+  const username = prompt("Enter admin username:");
+  const password = prompt("Enter admin password:");
+
+  if (username === "Gussy123" && password === "gus") {
+    const adminPanel = document.getElementById("adminPanel");
+    adminPanel.classList.add("show");
+    adminPanel.classList.remove("hide");
+  } else {
+    alert("Access Denied! Incorrect username or password.");
+  }
+});
+
+function dropConfetti() {
+  for (let i = 0; i < 100; i++) {
+    let confetti = document.createElement("div");
+    confetti.classList.add("confetti");
+    confetti.style.left = Math.random() * window.innerWidth + "px";
+    document.body.appendChild(confetti);
+
+    setTimeout(() => confetti.remove(), 2000);
+  }
+}
+
+
+function closeAdminPanel() {
+  const adminPanel = document.getElementById("adminPanel");
+  adminPanel.classList.add("hide");
+  adminPanel.classList.remove("show");
+  setTimeout(() => adminPanel.style.display = "none", 500); // Ensures the panel hides after the animation
+}
+
+document.getElementById("adminLogin").addEventListener("click", () => {
+    const username = prompt("Enter admin username:");
+    const password = prompt("Enter admin password:");
+    
+    if (username === "Gussy123" && password === "gus") {
+        document.getElementById("adminPanel").style.display = "block";
+    } else {
+        alert("Access Denied! Incorrect username or password.");
+    }
+});
+
+window.addEventListener('scroll', () => {
+  let scrollPos = window.scrollY;
+  const background = document.querySelector('.background');
+  const fadeElements = document.querySelectorAll('.scroll-fade');
+
+  // Parallax effect for the background
+  background.style.transform = `translateY(${scrollPos * 0.5}px)`;
+
+  // Fade elements based on scroll
+  fadeElements.forEach(element => {
+    if (scrollPos > 100) {
+      element.classList.add('hidden');
+    } else {
+      element.classList.remove('hidden');
+    }
+  });
+});
+
+function spawnImg8904() {
+  const img = document.createElement("img");
+  img.src = "img_8904.jpg"; // Change to actual image path
+  img.classList.add("img_8904");
+
+  // Random X position
+  img.style.left = Math.random() * window.innerWidth + "px";
+
+  // Random size
+  const size = Math.random() * 50 + 30; // Between 30px and 80px
+  img.style.width = `${size}px`;
+
+  document.body.appendChild(img);
+
+  // Remove after animation ends
+  setTimeout(() => {
+    img.remove();
+  }, 3000); // Match animation duration
+}
+
+// Spawn a new img_8904 every 500ms
+setInterval(spawnImg8904, 500);
+
+
+function giveClicks(amount) {
+    let count = parseInt(localStorage.getItem('clickCount')) || 0;
+    count += amount;
+    localStorage.setItem('clickCount', count);
+    document.getElementById("count").textContent = count;
+}
+
+function resetGame() {
+    if (confirm("Are you sure you want to RESET EVERYTHING?")) {
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+function closeAdminPanel() {
+    document.getElementById("adminPanel").style.display = "none";
+}
+</script>
+
+
+<!-- Buttons -->
+<div class="btn-container">
+  <button class="upgrade-button" id="upgradeClickPower">Upgrade Click (+1, Cost: 1000)</button>
+  <button class="rebirth-button" id="rebirthButton">Rebirth (x2 Multiplier, Cost: 10000)</button>
+</div>
+
+<!-- Clicker -->
+<button id="clickButton" class="click-button"></button>
+
+<!-- Reset Everything -->
+<button class="reset-button" id="resetProgress">Reset Everything</button>
+
+<script>
+// Load Data (Now properly updates everything!)
+let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
+let rebirths = localStorage.getItem('rebirths') ? parseInt(localStorage.getItem('rebirths')) : 0;
+let clickPower = localStorage.getItem('clickPower') ? parseInt(localStorage.getItem('clickPower')) : 1;
+let multiplier = localStorage.getItem('multiplier') ? parseInt(localStorage.getItem('multiplier')) : 1;
+
+document.getElementById("count").textContent = count;
+document.getElementById("rebirths").textContent = rebirths;
+
+// Click Button (100ms Delay)
+let clickCooldown = false;
+document.getElementById("clickButton").addEventListener("click", (event) => {
+    if (!clickCooldown) {
+        clickCooldown = true;
+        count += clickPower * multiplier;
+        document.getElementById("count").textContent = count;
+        localStorage.setItem('clickCount', count);
+        createFloatingImage(event.clientX, event.clientY);
+        createSmallBorjie();
+        setTimeout(() => { clickCooldown = false; }, 100); // 100ms delay
+    }
+});
+
+// Floating Click Animation
+function createFloatingImage(x, y) {
+    let borjie = document.createElement("div");
+    borjie.classList.add("floating-image");
+    borjie.style.backgroundImage = "url('IMG_8904.JPG')";
+    borjie.style.left = `${x}px`;
+    borjie.style.top = `${y}px`;
+    document.body.appendChild(borjie);
+    setTimeout(() => borjie.remove(), 1500);
+}
+let leaderboard = [
+  { name: "Player1", score: 500 },
+  { name: "Player2", score: 450 },
+  { name: "Player3", score: 300 },
+];
+
+function updateLeaderboard() {
+  let leaderboardElement = document.querySelector(".leaderboard");
+  leaderboardElement.innerHTML = "";
+
+  leaderboard
+    .sort((a, b) => b.score - a.score)
+    .forEach((player, index) => {
+      let entry = document.createElement("div");
+      entry.classList.add("leaderboard-entry");
+      entry.innerHTML = `${index + 1}. ${player.name} - ${player.score} pts`;
+      leaderboardElement.appendChild(entry);
+    });
+
+  dropConfetti(); // Celebrate top changes
+}
+
+
+// Small Bottom Borjie Animation
+function createSmallBorjie() {
+    let borjie = document.createElement("div");
+    borjie.classList.add("borjie-small");
+    borjie.style.backgroundImage = "url('IMG_8904.JPG')";
+    borjie.style.left = `${Math.random() * window.innerWidth}px`;
+    document.body.appendChild(borjie);
+    setTimeout(() => borjie.remove(), 3000);
+}
+
+// Upgrade Click Power Button (Fixed)
+document.getElementById("upgradeClickPower").addEventListener("click", () => {
+    if (count >= 1000) {
+        count -= 1000;
+        clickPower++;
+        document.getElementById("count").textContent = count;
+        localStorage.setItem('clickCount', count);
+        localStorage.setItem('clickPower', clickPower);
+    } else {
+        alert("You need 1000 clicks!");
+    }
+});
+
+// Rebirth Button (Fixed)
+document.getElementById("rebirthButton").addEventListener("click", () => {
+    if (count >= 10000) {
+        count = 0;
+        rebirths++;
+        multiplier *= 2;
+        document.getElementById("count").textContent = count;
+        document.getElementById("rebirths").textContent = rebirths;
+        localStorage.setItem('clickCount', count);
+        localStorage.setItem('rebirths', rebirths);
+        localStorage.setItem('multiplier', multiplier);
+        alert("Rebirth Successful! Click power now x2!");
+    } else {
+        alert("You need 10,000 clicks!");
+    }
+});
+
+document.addEventListener("scroll", () => {
+  const img = document.createElement("img");
+  img.src = "img_8904.png";
+  img.classList.add("img_8904");
+
+  img.style.left = Math.random() * window.innerWidth + "px";
+  img.style.width = `${Math.random() * 50 + 30}px`;
+
+  document.body.appendChild(img);
+
+  setTimeout(() => img.remove(), 3000);
+});
+
+
+// Reset Button (Fixed & Confirmed)
+document.getElementById("resetProgress").addEventListener("click", () => {
+    if (confirm("Reset EVERYTHING?")) {
+        localStorage.clear();
+        location.reload();
+    }
+});
+</script>
+
+</body>
+</html>
