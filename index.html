@@ -811,7 +811,6 @@ document.getElementById("clickButton").addEventListener("click", (event) => {
         localStorage.setItem('clickCount', count);
         createFloatingImage(event.clientX, event.clientY);
         createSmallBorjie();
-        setTimeout(() => { clickCooldown = false; }, 100); // 100ms delay
     }
 });
 
