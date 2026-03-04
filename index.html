@@ -1,915 +1,1381 @@
-    
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Borjie Clicker – Ultimate Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+:root {
+  --accent: #ff4500;
+  --gold: #ffd700;
+  --green: #4cff91;
+  --blue: #00cfff;
+  --purple: #c84bff;
+  --bg1: #0d0d1a;
+  --bg2: #1a0d2e;
+  --panel: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.12);
+}
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #1e1e1e, #333);
+  font-family: 'Nunito', sans-serif;
+  background: radial-gradient(ellipse at 20% 50%, #1a0533 0%, #0d0d1a 60%);
   color: white;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-  overflow: hidden;
+  justify-content: flex-start;
+  overflow-x: hidden;
   position: relative;
 }
 
-/* Stats */
-h1 { font-weight: 600; font-size: 2.5rem; margin-bottom: 20px; }
-.counter, .rebirthCounter, .rank { font-size: 2rem; margin-bottom: 10px; }
-
-/* Buttons */
-.btn-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+/* ── STARFIELD ── */
+#starfield {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
 }
-
-button {
-  padding: 12px 18px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: 0.3s ease-in-out;
-}
-
-.upgrade-button { background: #4CAF50; color: white; }
-.rebirth-button { background: #FF4500; color: white; }
-.rebirth-button:hover { background: #FF6347; }
-
-/* Reset Button */
-.reset-button {
+.star {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background: #FF0000;
-  color: white;
-  padding: 10px 15px;
-  font-size: 1rem;
-  cursor: pointer;
+  border-radius: 50%;
+  background: white;
+  animation: twinkle var(--d) ease-in-out infinite alternate;
 }
-.reset-button:hover { background: #FF4444; }
+@keyframes twinkle { from { opacity: 0.1; transform: scale(1); } to { opacity: 1; transform: scale(1.6); } }
 
-/* Rank Info */
-.rank-container {
+/* ── LAYOUT ── */
+.game-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 20px;
+  padding: 20px;
+  min-height: 100vh;
+  align-items: start;
+}
+
+/* ── PANELS ── */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  backdrop-filter: blur(12px);
+}
+
+/* ── HEADER ── */
+.header {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 10px 0 0;
+}
+.header h1 {
+  font-family: 'Bangers', cursive;
+  font-size: 4rem;
+  letter-spacing: 4px;
+  background: linear-gradient(90deg, #ff4500, #ffd700, #ff4500);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s linear infinite;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(255,100,0,0.6));
+}
+@keyframes shimmer { to { background-position: 200% center; } }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.stat-chip {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
 }
+.stat-chip .val { color: var(--gold); font-size: 1.2rem; }
 
-/* Floating Click Animation */
-.floating-image {
+/* ── CENTER COLUMN ── */
+.center-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── CLICK BUTTON ── */
+.click-ring {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pulse-ring {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  background-size: cover;
-  opacity: 1;
-  animation: floatUp 1.5s ease-out forwards;
+  inset: -10px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  opacity: 0;
+  animation: ringPulse 2s ease-out infinite;
 }
-@keyframes floatUp {
-  0% { transform: scale(0.8) translateY(0); opacity: 1; }
-  50% { transform: scale(1.2) translateY(-50px); opacity: 0.9; }
-  100% { transform: scale(1) translateY(-120px); opacity: 0; }
-}
-
-/* Small Borjie Animations */
-.flying-img {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  background-size: cover;
-  bottom: 10px;
-  opacity: 1;
-  animation: fadeOut 3s ease-out forwards;
+.pulse-ring:nth-child(2) { animation-delay: 0.7s; }
+.pulse-ring:nth-child(3) { animation-delay: 1.4s; }
+@keyframes ringPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
-.borjie-small {
-        position: absolute;
-        width: 80px;  /* You can adjust this size */
-        height: auto;
-        pointer-events: none;
-        transition: transform 1s ease-out, opacity 1s ease-out;
-    }
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0; transform: scale(1.5); }
-}
-
-/* Upgrade Button - Improved Hover Effect */
-button {
-  padding: 12px 18px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: 0.4s ease-in-out;
-}
-.leaderboard {
-  position: absolute;
-  top: 50px; /* Adjust as needed */
-  right: 20px; /* Moves it to the right */
-  width: 300px;
-  padding: 10px;
-  background: #222;
-  color: white;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 18px;
-}
-
-
-.leaderboard-entry {
-  padding: 5px 0;
-  border-bottom: 1px solid #444;
-}
-
-
-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Rebirth Button Hover */
-.rebirth-button:hover {
-  background: #FF6347;
-  transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(255, 99, 71, 0.4);
-}
-
-
-/* Click Button */
-.click-button {
+#clickButton {
   width: 180px;
   height: 180px;
-  margin-top: 25px;
+  border-radius: 50%;
+  border: 4px solid rgba(255,200,50,0.5);
+  background-image: url('IMG_8904.JPG');
+  background-size: cover;
+  background-color: #2a1a00;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.2s;
+  box-shadow: 0 0 30px rgba(255,100,0,0.4), inset 0 0 20px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
+}
+#clickButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 50px rgba(255,150,0,0.7), inset 0 0 20px rgba(0,0,0,0.3);
+}
+#clickButton:active {
+  transform: scale(0.93);
+  box-shadow: 0 0 15px rgba(255,100,0,0.3);
+}
+
+/* ── COMBO METER ── */
+.combo-bar-wrap {
+  width: 200px;
+  text-align: center;
+}
+.combo-label { font-size: 0.85rem; color: #aaa; margin-bottom: 4px; }
+.combo-bar-bg {
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.combo-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff4500, #ffd700);
+  border-radius: 10px;
+  transition: width 0.2s, background 0.3s;
+}
+#comboDisplay {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  transition: transform 0.15s, color 0.3s;
+  min-height: 2.5rem;
+}
+#comboDisplay.combo-pop { animation: comboPop 0.3s ease; }
+@keyframes comboPop { 0% { transform: scale(1.8); } 100% { transform: scale(1); } }
+
+/* ── UPGRADES ── */
+.upgrade-btn {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(76,255,145,0.12);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.upgrade-btn:hover:not(:disabled) {
+  background: rgba(76,255,145,0.25);
+  transform: translateX(4px);
+  box-shadow: -4px 0 0 var(--green);
+}
+.upgrade-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.upgrade-btn .cost { color: var(--gold); display: block; font-size: 0.8rem; font-weight: 400; }
+.upgrade-btn .icon { margin-right: 6px; }
+
+.rebirth-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid rgba(255,69,0,0.5);
+  background: rgba(255,69,0,0.15);
+  color: white;
+  font-family: 'Bangers', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.rebirth-btn:hover:not(:disabled) {
+  background: rgba(255,69,0,0.35);
+  box-shadow: 0 0 20px rgba(255,69,0,0.4);
+  transform: scale(1.02);
+}
+.rebirth-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── AUTO CLICKER ── */
+.auto-section { margin-top: 4px; }
+.cps-display {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+
+/* ── RANK ── */
+.rank-display {
+  text-align: center;
+  padding: 10px;
+}
+.rank-icon { font-size: 2rem; display: block; animation: rankFloat 2s ease-in-out infinite alternate; }
+@keyframes rankFloat { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+.rank-name {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+.rank-progress { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 8px; overflow: hidden; }
+.rank-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+/* ── GOLDEN BORJIE ── */
+#goldenBorjie {
+  position: fixed;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   background-image: url('IMG_8904.JPG');
   background-size: cover;
+  border: 3px solid var(--gold);
   cursor: pointer;
+  display: none;
+  z-index: 100;
+  animation: goldenFloat 0.8s ease-in-out infinite alternate, goldenGlow 1s ease infinite;
+  box-shadow: 0 0 20px var(--gold), 0 0 40px rgba(255,215,0,0.4);
 }
-.click-button:active {
-  transform: scale(0.95);
+@keyframes goldenFloat { from { transform: rotate(-5deg) scale(1); } to { transform: rotate(5deg) scale(1.1); } }
+@keyframes goldenGlow {
+  0%, 100% { box-shadow: 0 0 20px var(--gold), 0 0 40px rgba(255,215,0,0.4); }
+  50% { box-shadow: 0 0 40px var(--gold), 0 0 80px rgba(255,215,0,0.7); }
 }
 
-/* Example CSS for scroll effects */
-.background {
+/* ── ACHIEVEMENTS ── */
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.82rem;
+  transition: background 0.3s;
+}
+.achievement-item.unlocked {
+  background: rgba(255,215,0,0.1);
+  border-color: rgba(255,215,0,0.3);
+}
+.achievement-item.locked { opacity: 0.4; filter: grayscale(1); }
+.ach-icon { font-size: 1.4rem; }
+.ach-text .ach-title { font-weight: 700; }
+.ach-text .ach-desc { color: #999; font-size: 0.75rem; }
+
+/* ── TOAST ── */
+#toastContainer {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('your-background-image.jpg');
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
-  will-change: transform;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  max-width: 280px;
+}
+.toast.gold { background: linear-gradient(135deg, #7a5100, #ffd700); color: #000; border: 1px solid var(--gold); }
+.toast.green { background: linear-gradient(135deg, #003a1a, #4cff91); color: #000; border: 1px solid var(--green); }
+.toast.purple { background: linear-gradient(135deg, #3a005a, #c84bff); color: white; border: 1px solid var(--purple); }
+.toast.red { background: linear-gradient(135deg, #5a0000, #ff4444); color: white; border: 1px solid #ff4444; }
+@keyframes toastIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+/* ── FLOATING PARTICLES ── */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 999;
+  animation: particleFly var(--dur) ease-out forwards;
+}
+@keyframes particleFly {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+.float-text {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  z-index: 999;
+  animation: floatTextUp 1.2s ease-out forwards;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+}
+@keyframes floatTextUp {
+  0% { transform: translateY(0) scale(1.2); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(-100px) scale(0.8); opacity: 0; }
 }
 
-.scroll-fade {
-  opacity: 1;
-  transition: opacity 0.5s ease-out;
+/* ── CRIT FLASH ── */
+.crit-flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,215,0,0.3), transparent 70%);
+  pointer-events: none;
+  z-index: 50;
+  animation: critFlash 0.4s ease-out forwards;
 }
+@keyframes critFlash { from { opacity: 1; } to { opacity: 0; } }
 
-.scroll-fade.hidden {
-  opacity: 0;
+/* ── SCREEN SHAKE ── */
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px) rotate(-0.5deg); }
+  40% { transform: translateX(6px) rotate(0.5deg); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
+.shaking { animation: screenShake 0.3s ease; }
 
-/* Smooth Transition for Admin Panel */
-.admin-panel {
+/* ── PRESTIGE GLOW (post-rebirth) ── */
+@keyframes prestigeFlare {
+  0% { box-shadow: 0 0 0 0 var(--accent); }
+  50% { box-shadow: 0 0 60px 20px rgba(255,69,0,0.6); }
+  100% { box-shadow: 0 0 0 0 var(--accent); }
+}
+.prestige-flash { animation: prestigeFlare 1s ease-out; }
+
+/* ── MILESTONE BANNER ── */
+#milestoneBanner {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background: #222;
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  transform: translate(-50%,-50%) scale(0);
+  z-index: 9998;
+  background: linear-gradient(135deg, #1a0533, #300a5e);
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  padding: 30px 50px;
   text-align: center;
+  pointer-events: none;
+}
+#milestoneBanner.show {
+  animation: bannerPop 2.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes bannerPop {
+  0% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+  20% { transform: translate(-50%,-50%) scale(1.05); opacity: 1; }
+  80% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(0.9); opacity: 0; }
+}
+#milestoneBanner h2 { font-family: 'Bangers', cursive; font-size: 2.5rem; color: var(--gold); }
+#milestoneBanner p { color: #ccc; margin-top: 6px; }
+
+/* ── STREAK ── */
+.streak-fire { animation: firePulse 0.5s ease-in-out infinite alternate; }
+@keyframes firePulse { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(30deg) brightness(1.3); } }
+
+/* ── ADMIN ── */
+.admin-panel {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  background: #111; border: 1px solid #444;
+  padding: 24px; border-radius: 14px;
+  text-align: center; z-index: 9999;
   display: none;
-  opacity: 0;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  box-shadow: 0 0 40px rgba(0,100,255,0.3);
+  min-width: 280px;
+}
+.admin-panel h2 { font-family: 'Bangers', cursive; font-size: 2rem; margin-bottom: 16px; color: var(--blue); letter-spacing: 2px; }
+.admin-panel button { display: block; width: 100%; margin: 8px 0; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; font-size: 1rem; }
+
+/* ── MODAL ── */
+.modal {
+  display: none; position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  background: #1a0d2e; border: 1px solid var(--border);
+  padding: 24px; border-radius: 14px; text-align: center;
+  z-index: 9998; min-width: 260px;
+  box-shadow: 0 0 30px rgba(200,75,255,0.2);
+}
+.modal.active { display: block; }
+.modal h2 { font-family: 'Bangers', cursive; font-size: 1.8rem; color: var(--purple); margin-bottom: 14px; letter-spacing: 2px; }
+.modal p { font-size: 0.9rem; margin: 4px 0; color: #ccc; }
+.modal button { margin-top: 14px; padding: 10px 24px; background: var(--purple); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; }
+
+/* ── MISC BUTTONS ── */
+.top-left-btn {
+  position: fixed; top: 12px; left: 12px;
+  background: rgba(0,120,255,0.25); border: 1px solid rgba(0,120,255,0.5);
+  color: white; padding: 8px 14px; border-radius: 8px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  z-index: 200; transition: background 0.2s;
+}
+.top-left-btn:hover { background: rgba(0,120,255,0.5); }
+.reset-btn {
+  position: fixed; bottom: 12px; left: 12px;
+  background: rgba(255,0,0,0.2); border: 1px solid rgba(255,0,0,0.4);
+  color: white; padding: 8px 14px; border-radius: 8px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  z-index: 200; transition: background 0.2s;
+}
+.reset-btn:hover { background: rgba(255,0,0,0.5); }
+.info-btn {
+  background: rgba(255,165,0,0.3); border: 1px solid rgba(255,165,0,0.5);
+  color: white; width: 26px; height: 26px; border-radius: 50%;
+  font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.info-btn:hover { background: rgba(255,165,0,0.7); }
+
+/* ── CONFETTI ── */
+.confetti-piece {
+  position: fixed;
+  width: 10px; height: 10px;
+  pointer-events: none;
+  z-index: 9997;
+  animation: confettiFall var(--dur) ease-in forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
 
-.admin-panel.show {
-  display: block;
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+/* ── CLICK STREAK TIMER ── */
+.streak-bar-wrap { width: 200px; }
+.streak-bar-fill {
+  height: 4px;
+  background: linear-gradient(90deg, #ff4500, #ffd700);
+  border-radius: 10px;
+  transition: width 0.1s linear;
+  width: 100%;
 }
 
-.admin-panel.hide {
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.9);
+/* ── SECTION TITLES ── */
+.section-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
 }
 
+/* ── NUMBER FORMAT ── */
+.big-number { font-family: 'Bangers', cursive; }
 
+/* Responsive */
+@media (max-width: 700px) {
+  .game-wrapper { grid-template-columns: 1fr; }
+  .left-col, .right-col { order: 3; }
+  .center-col { order: 1; }
+  .stats-bar { order: 2; }
+}
 </style>
 </head>
 <body>
-    <script>
-        
-        function createFlyingImage(x, y) {
-    let img = document.createElement("img");
-    img.src = "IMG_8904.JPG";  // Ensure the path is correct
-    console.log("Image source: ", img.src); // Check if the image path is correct
-    img.classList.add("flying-img");
 
-    img.style.left = `${x - 40}px`;  // Adjusts image position so it's centered
-    img.style.top = `${y - 40}px`;
+<!-- Starfield -->
+<canvas id="starfield"></canvas>
 
-    document.body.appendChild(img);
+<!-- Fixed Buttons -->
+<button class="top-left-btn" id="adminLogin">🔑 Admin</button>
+<button class="reset-btn" id="resetProgress">🗑 Reset</button>
 
-    setTimeout(() => {
-        img.style.transform = "translateY(-150px) scale(0.5)";  // Moves the image up and shrinks it
-        img.style.opacity = "0";  // Fade-out effect
-    }, 50);
+<!-- Golden Borjie -->
+<div id="goldenBorjie" title="CLICK ME!"></div>
 
-    setTimeout(() => {
-        img.remove();  // Removes the image after animation
-    }, 1000);
-}
+<!-- Toast Container -->
+<div id="toastContainer"></div>
 
-        document.getElementById("clickButton").addEventListener("click", (event) => {
-            if (!clickCooldown) {
-                clickCooldown = true;
-                count += clickPower * multiplier;
-                document.getElementById("count").textContent = count;
-                localStorage.setItem('clickCount', count);
-                createFlyingImage(event.clientX, event.clientY);  // Add the flying image effect
-                setTimeout(() => { clickCooldown = false; }, 100);
-            }
-        });
-    
-        // Flying Image Animation (Moves up from the click location)
-        function createFlyingImage(x, y) {
-            let img = document.createElement("img");
-            img.src = "IMG_8904.JPG";  // Your image path
-            img.classList.add("flying-img");
-    
-            img.style.left = `${x - 40}px`;  // Adjusts image position so it's centered
-            img.style.top = `${y - 40}px`;
-    
-            document.body.appendChild(img);
-    
-            setTimeout(() => {
-                img.style.transform = "translateY(-150px) scale(0.5)";  // Moves the image up and shrinks it
-                img.style.opacity = "0";  // Fade-out effect
-            }, 50);
-    
-            setTimeout(() => {
-                img.remove();  // Removes the image after animation
-            }, 1000);
-        }
-
-        // For mouse events on PC
-document.addEventListener('click', function(e) {
-    createFlyingImage(e);
-});
-
-// For touch events on mobile
-document.addEventListener('touchstart', function(e) {
-    createFlyingImage(e);
-});
-
-function createFlyingImage(event) {
-    // Create and position the image based on the event
-    let img = document.createElement("img");
-    img.src = "IMG_8904.JPG";
-    img.classList.add('flying-img');  // Optional: Add class for styling
-    document.body.appendChild(img);
-}
-function createFlyingImage(event) {
-    let img = document.createElement("img");
-    img.src = "IMG_8904.JPG";
-    img.classList.add('flying-img');
-    document.body.appendChild(img);
-
-    // Remove the image after 2 seconds
-    setTimeout(function() {
-        img.remove();
-    }, 2000);
-}
-
-    </script>
-    
-
-<h1>Borjie Clicker</h1>
-<div class="rebirthCounter">Rebirths: <span id="rebirths">0</span></div>
-<div class="counter">Clicks: <span id="count">0</span></div>
-
-
-<!-- Rank Display with "!" Button -->
-<div class="rank-container">
-    <div class="rank">Rank: <span id="rankTitle">Clanky Clicker</span></div>
-    <button class="info-button" id="infoButton">!</button>
-  </div>
-  
-  <!-- Rank Info Modal -->
-  <div class="modal" id="infoModal">
-    <h2>Rank Info</h2>
-    <p>Clanky Clicker: 0+ Clicks</p>
-    <p>Amateur Clicker: 1,000+ Clicks</p>
-    <p>Special Spammer: 5,000+ Clicks</p>
-    <p>Advanced Yapper: 25,000+ Clicks</p>
-    <p>Borjie Bonker: 50,000+ Clicks</p>
-    <p>Borjie Baiter: 1,000,000+ Clicks</p>
-    <button id="closeInfoButton">Close</button>
-  </div>
-  
-  <!-- CSS for Modal -->
-  <style>
-  .modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #222;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-  }
-  .modal.active { display: block; }
-  
-  .info-button {
-    background: #FFA500;
-    color: white;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-  }
-  .info-button:hover { background: #FFC04D; }
-  </style>
-  
-  <!-- JavaScript for Modal Functionality -->
-  <script>
-  document.getElementById("infoButton").addEventListener("click", () => {
-      document.getElementById("infoModal").classList.add("active");
-  });
-  document.getElementById("closeInfoButton").addEventListener("click", () => {
-      document.getElementById("infoModal").classList.remove("active");
-  });
-  </script>
-<!-- Admin Login Button -->
-<button class="admin-button" id="adminLogin">Admin</button>
-
-<!-- Admin Panel (Hidden by Default) -->
-<div id="adminPanel" class="admin-panel">
-    <h2>Admin Controls</h2>
-    <button class="admin-boost" onclick="giveClicks(1000)">+1,000 Clicks</button>
-    <button class="admin-boost" onclick="giveClicks(10000)">+10,000 Clicks</button>
-    <button class="admin-boost" onclick="giveClicks(100000)">+100,000 Clicks</button>
-    <button class="admin-boost" onclick="giveClicks(1000000)">+1,000,000 Clicks</button>
-    <button class="admin-reset" onclick="resetGame()">Reset Everything</button>
-    <button class="close-admin" onclick="closeAdminPanel()">Close</button>
+<!-- Milestone Banner -->
+<div id="milestoneBanner">
+  <h2 id="milestoneTitle">🏆 MILESTONE!</h2>
+  <p id="milestoneText"></p>
 </div>
 
-<div class="leaderboard"></div>
+<!-- Admin Panel -->
+<div id="adminPanel" class="admin-panel">
+  <h2>⚙️ Admin</h2>
+  <button onclick="giveClicks(1000)" style="background:#ffd700;color:#000">+1,000 Clicks</button>
+  <button onclick="giveClicks(10000)" style="background:#ffa500;color:#000">+10,000 Clicks</button>
+  <button onclick="giveClicks(100000)" style="background:#ff6600;color:#fff">+100,000 Clicks</button>
+  <button onclick="giveClicks(1000000)" style="background:#ff3300;color:#fff">+1,000,000 Clicks</button>
+  <button onclick="toggleGodMode()" style="background:#c84bff;color:#fff">⚡ God Mode</button>
+  <button onclick="resetGame()" style="background:#ff0000;color:#fff">💥 Reset All</button>
+  <button onclick="closeAdmin()" style="background:#444;color:#fff">✖ Close</button>
+</div>
 
+<!-- Rank Info Modal -->
+<div class="modal" id="infoModal">
+  <h2>⭐ Ranks</h2>
+  <p>🔩 Clanky Clicker: 0+ Clicks</p>
+  <p>🖱 Amateur Clicker: 1,000+</p>
+  <p>💬 Special Spammer: 5,000+</p>
+  <p>🗣 Advanced Yapper: 25,000+</p>
+  <p>💀 Borjie Bonker: 50,000+</p>
+  <p>🎣 Borjie Baiter: 100,000+</p>
+  <p>👑 Grand Borjie: 500,000+</p>
+  <p>🌌 Cosmic Borjie: 1,000,000+</p>
+  <button onclick="document.getElementById('infoModal').classList.remove('active')">Close</button>
+</div>
 
-<!-- CSS (Admin Panel & Buttons) -->
-<style>
-.admin-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #007BFF;
-  color: white;
-  padding: 8px 12px;
-  font-size: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  display: block;
-}
-.admin-button:hover { background: #339BFF; }
+<!-- MAIN LAYOUT -->
+<div class="game-wrapper">
 
-.admin-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #222;
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-  text-align: center;
-  display: none;
-}
+  <!-- HEADER -->
+  <div class="header">
+    <h1>BORJIE CLICKER</h1>
+    <p style="color:#888;font-size:0.85rem;margin-top:4px;">Ultimate Edition</p>
+  </div>
 
-.admin-boost, .admin-reset, .close-admin {
-  display: block;
-  margin: 10px auto;
-  padding: 10px 15px;
-  font-size: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-  transition: 0.3s;
-}
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-chip">🖱 Clicks: <span class="val big-number" id="count">0</span></div>
+    <div class="stat-chip">🔁 Rebirths: <span class="val" id="rebirths">0</span></div>
+    <div class="stat-chip">⚡ Per Click: <span class="val" id="perClickDisplay">1</span></div>
+    <div class="stat-chip">🔥 CPS: <span class="val" id="cpsDisplay">0</span></div>
+    <div class="stat-chip" id="streakChip" style="display:none">📅 Streak: <span class="val" id="streakDisplay">0</span> days 🔥</div>
+  </div>
 
-.admin-boost { background: #FFD700; color: black; font-weight: bold; }
-.admin-boost:hover { background: #FFC700; }
-
-.admin-reset {
-  background: #FF0000;
-  color: white;
-}
-.admin-reset:hover { background: #FF4444; }
-
-.close-admin {
-  background: #888;
-  color: white;
-}
-.close-admin:hover { background: #bbb; }
-
-/* Enhanced Floating Animation */
-.floating-image {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background-size: cover;
-  opacity: 1;
-  animation: floatUp 2s ease-out forwards, rotateImage 2s ease-out forwards;
-}
-.rank {
-  transition: opacity 0.3s ease, transform 0.5s ease;
-}
-
-.rank.updated {
-  opacity: 0;
-  transform: scale(1.2);
-}
-
-.rank.updated.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.img_8904 {
-  position: absolute;
-  top: -100px; /* Start off-screen */
-  width: 50px; /* Adjust size */
-  height: auto;
-  animation: fall 3s linear forwards;
-}
-
-@keyframes fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-
-
-@keyframes floatUp {
-  0% { transform: scale(0.8) translateY(0); opacity: 1; }
-  50% { transform: scale(1.2) translateY(-60px); opacity: 0.9; }
-  100% { transform: scale(1) translateY(-120px); opacity: 0; }
-}
-
-@keyframes rotateImage {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes bouncyFall {
-  0% {
-    transform: translateY(0) scale(1, 1);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(80vh) scale(1.1, 0.9);
-  }
-  75% {
-    transform: translateY(85vh) scale(0.9, 1.1);
-  }
-  90% {
-    transform: translateY(90vh) scale(1.05, 0.95);
-  }
-  100% {
-    transform: translateY(100vh) scale(1, 1);
-    opacity: 0;
-  }
-}
-
-.img_8904 {
-  position: absolute;
-  top: -100px;
-  width: 50px;
-  animation: bouncyFall 3s cubic-bezier(0.5, 0, 0.5, 1) forwards;
-}
-@keyframes swirlingFall {
-  0% {
-    transform: translateX(0) translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  25% {
-    transform: translateX(-50px) translateY(30vh) rotate(45deg);
-  }
-  50% {
-    transform: translateX(50px) translateY(60vh) rotate(-45deg);
-  }
-  75% {
-    transform: translateX(-30px) translateY(85vh) rotate(30deg);
-  }
-  100% {
-    transform: translateX(0) translateY(100vh) rotate(0deg);
-    opacity: 0;
-  }
-}
-
-.img_8904 {
-  position: absolute;
-  top: -100px;
-  width: 50px;
-  animation: swirlingFall 4s ease-in-out forwards;
-}
-
-@keyframes ufoDrop {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  30% {
-    transform: translateY(20px) scale(1.05);
-  }
-  50% {
-    transform: translateY(0) scale(0.95);
-  }
-  80% {
-    transform: translateY(90vh) scale(1.1);
-  }
-  100% {
-    transform: translateY(100vh) scale(1);
-    opacity: 0;
-  }
-}
-
-.img_8904 {
-  position: absolute;
-  top: -100px;
-  width: 50px;
-  animation: ufoDrop 3s ease-in forwards;
-}
-
-@keyframes slideIn {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  50% {
-    transform: translateX(10%);
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.leaderboard-entry {
-  animation: slideIn 0.6s ease-in-out;
-}
-@keyframes crownGlow {
-  0% {
-    text-shadow: 0 0 5px gold;
-  }
-  50% {
-    text-shadow: 0 0 15px gold;
-  }
-  100% {
-    text-shadow: 0 0 5px gold;
-  }
-}
-
-.leaderboard-entry:first-child {
-  color: gold;
-  font-weight: bold;
-  animation: crownGlow 1s infinite alternate;
-}
-@keyframes confettiFall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-  }
-}
-
-.confetti {
-  position: absolute;
-  top: 0;
-  width: 10px;
-  height: 10px;
-  background: hsl(calc(360 * var(--rand)), 100%, 50%);
-  animation: confettiFall 2s ease-out;
-}
-@keyframes hoverFloat {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.button:hover {
-  animation: hoverFloat 0.5s ease-in-out infinite alternate;
-}
-@keyframes scrollUp {
-  0% {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.leaderboard {
-  overflow: hidden;
-}
-
-.leaderboard-entry {
-  animation: scrollUp 0.6s ease-in-out;
-}
-
-
-
-
-
-</style>
-
-<!-- JavaScript (Admin Functionality) -->
-<script>
-
-function updateRank(newRank) {
-  const rankElement = document.getElementById('rankTitle');
-  rankElement.classList.add('updated');
-  setTimeout(() => {
-    rankElement.textContent = newRank;
-    rankElement.classList.add('active');
-  }, 300); // Add delay before text change
-}
-
-
-document.getElementById("adminLogin").addEventListener("click", () => {
-  const username = prompt("Enter admin username:");
-  const password = prompt("Enter admin password:");
-
-  if (username === "Gussy123" && password === "gus") {
-    const adminPanel = document.getElementById("adminPanel");
-    adminPanel.classList.add("show");
-    adminPanel.classList.remove("hide");
-  } else {
-    alert("Access Denied! Incorrect username or password.");
-  }
-});
-
-function dropConfetti() {
-  for (let i = 0; i < 100; i++) {
-    let confetti = document.createElement("div");
-    confetti.classList.add("confetti");
-    confetti.style.left = Math.random() * window.innerWidth + "px";
-    document.body.appendChild(confetti);
-
-    setTimeout(() => confetti.remove(), 2000);
-  }
-}
-
-
-function closeAdminPanel() {
-  const adminPanel = document.getElementById("adminPanel");
-  adminPanel.classList.add("hide");
-  adminPanel.classList.remove("show");
-  setTimeout(() => adminPanel.style.display = "none", 500); // Ensures the panel hides after the animation
-}
-
-document.getElementById("adminLogin").addEventListener("click", () => {
-    const username = prompt("Enter admin username:");
-    const password = prompt("Enter admin password:");
+  <!-- LEFT COLUMN -->
+  <div class="left-col panel" style="display:flex;flex-direction:column;gap:12px;">
     
-    if (username === "Gussy123" && password === "gus") {
-        document.getElementById("adminPanel").style.display = "block";
-    } else {
-        alert("Access Denied! Incorrect username or password.");
+    <!-- Rank -->
+    <div class="rank-display">
+      <div class="section-title">Rank</div>
+      <span class="rank-icon" id="rankIcon">🔩</span>
+      <div style="display:flex;align-items:center;gap:6px;justify-content:center;margin-top:4px;">
+        <span class="rank-name" id="rankTitle">Clanky Clicker</span>
+        <button class="info-btn" id="infoButton">!</button>
+      </div>
+      <div class="rank-progress">
+        <div class="rank-progress-fill" id="rankProgressFill" style="width:0%"></div>
+      </div>
+      <div style="font-size:0.75rem;color:#777;margin-top:4px;" id="rankProgressLabel"></div>
+    </div>
+
+    <!-- Upgrades -->
+    <div>
+      <div class="section-title">Upgrades</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="upgrade-btn" id="upgradeClickPower">
+          <span class="icon">👆</span>Click Power +1
+          <span class="cost" id="upgradeCost">Cost: 1,000</span>
+        </button>
+        <button class="upgrade-btn" id="upgradeAutoClicker">
+          <span class="icon">🤖</span>Auto Clicker
+          <span class="cost" id="autoCost">Cost: 500 (+1 CPS)</span>
+        </button>
+        <button class="upgrade-btn" id="upgradeAutoBoost">
+          <span class="icon">🚀</span>Boost Auto (+2 CPS)
+          <span class="cost" id="autoBoostCost">Cost: 5,000</span>
+        </button>
+        <button class="upgrade-btn" id="upgradeLuck">
+          <span class="icon">🍀</span>Crit Chance +5%
+          <span class="cost" id="luckCost">Cost: 3,000</span>
+        </button>
+        <button class="upgrade-btn" id="upgradeGolden">
+          <span class="icon">✨</span>Golden Spawn +
+          <span class="cost" id="goldenCost">Cost: 8,000</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Rebirth -->
+    <div>
+      <div class="section-title">Rebirth</div>
+      <button class="rebirth-btn" id="rebirthButton">
+        🌀 REBIRTH<br>
+        <span style="font-size:0.75rem;font-family:Nunito;font-weight:400;letter-spacing:0;">x2 Multiplier · Cost: 10,000</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CENTER COLUMN -->
+  <div class="center-col">
+
+    <!-- Click area -->
+    <div class="click-ring">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <button id="clickButton"></button>
+    </div>
+
+    <!-- Combo -->
+    <div style="text-align:center">
+      <div id="comboDisplay"></div>
+      <div class="combo-bar-wrap">
+        <div class="combo-label">Combo Meter</div>
+        <div class="combo-bar-bg">
+          <div class="combo-bar-fill" id="comboBarFill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Streak timer bar -->
+    <div class="streak-bar-wrap">
+      <div class="combo-bar-bg">
+        <div class="streak-bar-fill" id="streakBarFill" style="width:100%;background:linear-gradient(90deg,#ff4500,#ffd700)"></div>
+      </div>
+    </div>
+
+    <!-- Total All-Time -->
+    <div style="text-align:center;color:#666;font-size:0.8rem;">
+      All-time: <span style="color:#aaa;" id="allTimeCount">0</span>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col panel" style="display:flex;flex-direction:column;gap:12px;">
+
+    <!-- Achievements -->
+    <div>
+      <div class="section-title">Achievements</div>
+      <div id="achievementList"></div>
+    </div>
+
+    <!-- Stats -->
+    <div>
+      <div class="section-title">Stats</div>
+      <div style="font-size:0.82rem;color:#aaa;line-height:1.9;">
+        🖱 Click Power: <span style="color:white;font-weight:700;" id="statClickPower">1</span><br>
+        ⚡ Multiplier: <span style="color:white;font-weight:700;" id="statMult">1</span>x<br>
+        🍀 Crit Chance: <span style="color:white;font-weight:700;" id="statCrit">5</span>%<br>
+        🤖 Auto CPS: <span style="color:white;font-weight:700;" id="statCPS">0</span><br>
+        🏅 Golden Hit: <span style="color:white;font-weight:700;" id="statGolden">0</span><br>
+        💥 Biggest Crit: <span style="color:white;font-weight:700;" id="statBigCrit">0</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  STARFIELD
+// ══════════════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < 160; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5,
+        opacity: Math.random(),
+        speed: Math.random() * 0.3 + 0.05
+      });
     }
-});
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${s.opacity})`;
+      ctx.fill();
+      s.opacity += s.speed * 0.03;
+      if (s.opacity > 1 || s.opacity < 0) s.speed *= -1;
+    });
+    requestAnimationFrame(draw);
+  }
+  resize();
+  initStars();
+  draw();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+})();
 
-window.addEventListener('scroll', () => {
-  let scrollPos = window.scrollY;
-  const background = document.querySelector('.background');
-  const fadeElements = document.querySelectorAll('.scroll-fade');
+// ══════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════
+const LS = localStorage;
+const load = (k, def) => { const v = LS.getItem(k); return v !== null ? JSON.parse(v) : def; };
+const save = (k, v) => LS.setItem(k, JSON.stringify(v));
 
-  // Parallax effect for the background
-  background.style.transform = `translateY(${scrollPos * 0.5}px)`;
+let count       = load('count', 0);
+let allTime     = load('allTime', 0);
+let rebirths    = load('rebirths', 0);
+let clickPower  = load('clickPower', 1);
+let multiplier  = load('multiplier', 1);
+let autoCPS     = load('autoCPS', 0);
+let critChance  = load('critChance', 5);    // percent
+let goldenMult  = load('goldenMult', 1);    // golden multiplier bonus count
+let goldenHits  = load('goldenHits', 0);
+let biggestCrit = load('biggestCrit', 0);
+let dailyStreak = load('dailyStreak', 0);
+let lastLogin   = load('lastLogin', null);
+let godMode     = false;
 
-  // Fade elements based on scroll
-  fadeElements.forEach(element => {
-    if (scrollPos > 100) {
-      element.classList.add('hidden');
+// Upgrade costs (scale with levels)
+let upgradeLevel   = load('upgradeLevel', 0);
+let autoLevel      = load('autoLevel', 0);
+let autoBoostLevel = load('autoBoostLevel', 0);
+let luckLevel      = load('luckLevel', 0);
+let goldenLevel    = load('goldenLevel', 0);
+
+// Combo system
+let combo = 0;
+let comboTimer = null;
+const COMBO_TIMEOUT = 1800; // ms
+const MAX_COMBO = 20;
+
+// Streak timer
+let streakTimeout = null;
+let streakFraction = 1;
+
+// Auto interval
+let autoInterval = null;
+
+// Achievement unlocks
+let achievements = load('achievements', {});
+
+// ══════════════════════════════════════════════
+//  DAILY STREAK
+// ══════════════════════════════════════════════
+(function checkStreak() {
+  const today = new Date().toDateString();
+  if (!lastLogin) {
+    dailyStreak = 1;
+    save('lastLogin', today);
+    save('dailyStreak', dailyStreak);
+    showToast(`🌅 Day 1 streak started!`, 'green');
+  } else if (lastLogin !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (lastLogin === yesterday) {
+      dailyStreak++;
+      showToast(`🔥 Streak: ${dailyStreak} days! Bonus x${1+dailyStreak*0.05} today!`, 'gold');
     } else {
-      element.classList.remove('hidden');
+      dailyStreak = 1;
+      showToast('💔 Streak reset. Start again!', 'red');
+    }
+    save('lastLogin', today);
+    save('dailyStreak', dailyStreak);
+  }
+  if (dailyStreak > 1) {
+    document.getElementById('streakChip').style.display = 'flex';
+    document.getElementById('streakDisplay').textContent = dailyStreak;
+  }
+})();
+function getStreakBonus() { return 1 + (dailyStreak - 1) * 0.05; }
+
+// ══════════════════════════════════════════════
+//  ACHIEVEMENTS
+// ══════════════════════════════════════════════
+const ACHIEVEMENTS_DEF = [
+  { id: 'first_click',   icon: '🖱',  title: 'First Click!',     desc: 'Click for the first time',        check: () => allTime >= 1 },
+  { id: 'combo10',       icon: '🔥',  title: 'On Fire',          desc: 'Reach a 10x combo',               check: () => combo >= 10 },
+  { id: 'first_crit',   icon: '💥',  title: 'Critical!',        desc: 'Land your first critical hit',    check: () => biggestCrit > 0 },
+  { id: 'golden',        icon: '✨',  title: 'Gold Rush',        desc: 'Click the Golden Borjie',         check: () => goldenHits >= 1 },
+  { id: 'rebirth1',      icon: '🌀',  title: 'Reborn',           desc: 'Perform your first rebirth',      check: () => rebirths >= 1 },
+  { id: 'clicks1k',      icon: '🏅',  title: 'Clickaholic',      desc: '1,000 total clicks',              check: () => allTime >= 1000 },
+  { id: 'clicks10k',     icon: '🥈',  title: 'Click Machine',    desc: '10,000 total clicks',             check: () => allTime >= 10000 },
+  { id: 'clicks100k',    icon: '🥇',  title: 'Borjie Master',    desc: '100,000 total clicks',            check: () => allTime >= 100000 },
+  { id: 'streak3',       icon: '📅',  title: 'Loyal',            desc: '3-day login streak',              check: () => dailyStreak >= 3 },
+  { id: 'autobuyer',     icon: '🤖',  title: 'Automation',       desc: 'Buy your first Auto Clicker',     check: () => autoLevel >= 1 },
+];
+
+function renderAchievements() {
+  const list = document.getElementById('achievementList');
+  list.innerHTML = '';
+  ACHIEVEMENTS_DEF.forEach(a => {
+    const unlocked = achievements[a.id];
+    const div = document.createElement('div');
+    div.className = 'achievement-item ' + (unlocked ? 'unlocked' : 'locked');
+    div.innerHTML = `<span class="ach-icon">${a.icon}</span><div class="ach-text"><div class="ach-title">${a.title}</div><div class="ach-desc">${a.desc}</div></div>`;
+    list.appendChild(div);
+  });
+}
+
+function checkAchievements() {
+  ACHIEVEMENTS_DEF.forEach(a => {
+    if (!achievements[a.id] && a.check()) {
+      achievements[a.id] = true;
+      save('achievements', achievements);
+      showToast(`🏆 Achievement: ${a.title}`, 'gold');
+      spawnConfetti();
+      renderAchievements();
     }
   });
-});
-
-
-  // Random X position
-  img.style.left = Math.random() * window.innerWidth + "px";
-
-  // Random size
-  const size = Math.random() * 50 + 30; // Between 30px and 80px
-  img.style.width = `${size}px`;
-
-  document.body.appendChild(img);
-
-  // Remove after animation ends
-  setTimeout(() => {
-    img.remove();
-  }, 3000); // Match animation duration
 }
 
-// Spawn a new img_8904 every 500ms
-setInterval(spawnIMG8904, 500);
+// ══════════════════════════════════════════════
+//  RANKS
+// ══════════════════════════════════════════════
+const RANKS = [
+  { name: 'Clanky Clicker',  icon: '🔩',  min: 0 },
+  { name: 'Amateur Clicker', icon: '🖱',  min: 1000 },
+  { name: 'Special Spammer', icon: '💬', min: 5000 },
+  { name: 'Advanced Yapper', icon: '🗣',  min: 25000 },
+  { name: 'Borjie Bonker',   icon: '💀', min: 50000 },
+  { name: 'Borjie Baiter',   icon: '🎣', min: 100000 },
+  { name: 'Grand Borjie',    icon: '👑', min: 500000 },
+  { name: 'Cosmic Borjie',   icon: '🌌', min: 1000000 },
+];
+let currentRankIdx = 0;
 
+function updateRank() {
+  let idx = 0;
+  for (let i = RANKS.length - 1; i >= 0; i--) {
+    if (allTime >= RANKS[i].min) { idx = i; break; }
+  }
+  if (idx !== currentRankIdx) {
+    currentRankIdx = idx;
+    const r = RANKS[idx];
+    document.getElementById('rankTitle').textContent = r.name;
+    document.getElementById('rankIcon').textContent = r.icon;
+    showToast(`⬆️ Rank Up: ${r.icon} ${r.name}!`, 'purple');
+    spawnConfetti();
+    showMilestone(`${r.icon} RANK UP!`, `You are now: ${r.name}`);
+  }
+  // Progress bar
+  const r = RANKS[idx];
+  const next = RANKS[idx + 1];
+  if (next) {
+    const pct = Math.min(100, ((allTime - r.min) / (next.min - r.min)) * 100);
+    document.getElementById('rankProgressFill').style.width = pct + '%';
+    document.getElementById('rankProgressLabel').textContent = `${fmt(next.min - allTime)} to ${next.name}`;
+  } else {
+    document.getElementById('rankProgressFill').style.width = '100%';
+    document.getElementById('rankProgressLabel').textContent = 'MAX RANK!';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  FORMAT NUMBERS
+// ══════════════════════════════════════════════
+function fmt(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return Math.floor(n).toLocaleString();
+}
+
+// ══════════════════════════════════════════════
+//  UPDATE UI
+// ══════════════════════════════════════════════
+function updateUI() {
+  document.getElementById('count').textContent = fmt(count);
+  document.getElementById('allTimeCount').textContent = fmt(allTime);
+  document.getElementById('rebirths').textContent = rebirths;
+  const effectivePower = Math.floor(clickPower * multiplier * getStreakBonus());
+  document.getElementById('perClickDisplay').textContent = fmt(effectivePower);
+  document.getElementById('cpsDisplay').textContent = fmt(autoCPS * multiplier);
+  // Stats
+  document.getElementById('statClickPower').textContent = clickPower;
+  document.getElementById('statMult').textContent = multiplier;
+  document.getElementById('statCrit').textContent = critChance;
+  document.getElementById('statCPS').textContent = autoCPS;
+  document.getElementById('statGolden').textContent = goldenHits;
+  document.getElementById('statBigCrit').textContent = fmt(biggestCrit);
+  // Upgrade buttons
+  document.getElementById('upgradeClickPower').disabled = count < upgradeCostFn(upgradeLevel);
+  document.getElementById('upgradeAutoClicker').disabled = count < autoCostFn(autoLevel);
+  document.getElementById('upgradeAutoBoost').disabled = count < autoBoostCostFn(autoBoostLevel);
+  document.getElementById('upgradeLuck').disabled = count < luckCostFn(luckLevel);
+  document.getElementById('upgradeGolden').disabled = count < goldenUpgradeCostFn(goldenLevel);
+  document.getElementById('rebirthButton').disabled = count < 10000;
+  // Costs display
+  document.getElementById('upgradeCost').textContent = `Cost: ${fmt(upgradeCostFn(upgradeLevel))}`;
+  document.getElementById('autoCost').textContent = `Cost: ${fmt(autoCostFn(autoLevel))} (+1 CPS)`;
+  document.getElementById('autoBoostCost').textContent = `Cost: ${fmt(autoBoostCostFn(autoBoostLevel))} (+2 CPS)`;
+  document.getElementById('luckCost').textContent = `Cost: ${fmt(luckCostFn(luckLevel))} (${critChance}%→${critChance+5}%)`;
+  document.getElementById('goldenCost').textContent = `Cost: ${fmt(goldenUpgradeCostFn(goldenLevel))}`;
+  updateRank();
+  checkAchievements();
+}
+
+// Cost functions
+const upgradeCostFn   = lvl => Math.floor(1000 * Math.pow(1.5, lvl));
+const autoCostFn      = lvl => Math.floor(500  * Math.pow(1.8, lvl));
+const autoBoostCostFn = lvl => Math.floor(5000 * Math.pow(2.0, lvl));
+const luckCostFn      = lvl => Math.floor(3000 * Math.pow(1.9, lvl));
+const goldenUpgradeCostFn = lvl => Math.floor(8000 * Math.pow(2.2, lvl));
+
+// ══════════════════════════════════════════════
+//  AUTO CLICKER TICKER
+// ══════════════════════════════════════════════
+function startAutoClicker() {
+  if (autoInterval) clearInterval(autoInterval);
+  if (autoCPS <= 0 && !godMode) return;
+  autoInterval = setInterval(() => {
+    const gain = godMode ? 9999 : autoCPS * multiplier;
+    count += gain;
+    allTime += gain;
+    save('count', count);
+    save('allTime', allTime);
+    updateUI();
+  }, 1000);
+}
+
+// ══════════════════════════════════════════════
+//  CLICK HANDLER
+// ══════════════════════════════════════════════
+let clickCooldown = false;
+document.getElementById('clickButton').addEventListener('click', e => {
+  if (clickCooldown && !godMode) return;
+  clickCooldown = true;
+
+  // Critical hit
+  const isCrit = Math.random() * 100 < critChance;
+  const base = Math.floor(clickPower * multiplier * getStreakBonus());
+  const comboBonus = 1 + (combo * 0.1);
+  let gained = Math.floor(base * comboBonus);
+  if (isCrit) {
+    gained *= 3;
+    if (gained > biggestCrit) { biggestCrit = gained; save('biggestCrit', biggestCrit); }
+    spawnCritEffect(e.clientX, e.clientY, gained);
+  }
+
+  count += gained;
+  allTime += gained;
+  save('count', count);
+  save('allTime', allTime);
+
+  // Combo
+  updateCombo();
+
+  // Animations
+  spawnParticles(e.clientX, e.clientY, isCrit);
+  spawnFloatText(e.clientX, e.clientY, `+${fmt(gained)}`, isCrit ? '#ffd700' : '#ffffff');
+  spawnFlyingBorjie(e.clientX, e.clientY);
+
+  updateUI();
+  setTimeout(() => { clickCooldown = false; }, godMode ? 0 : 60);
+});
+
+// ══════════════════════════════════════════════
+//  COMBO SYSTEM (Feature 1)
+// ══════════════════════════════════════════════
+function updateCombo() {
+  combo = Math.min(combo + 1, MAX_COMBO);
+  clearTimeout(comboTimer);
+  clearTimeout(streakTimeout);
+
+  streakFraction = 1;
+  document.getElementById('streakBarFill').style.width = '100%';
+
+  // Decay the streak bar
+  const start = Date.now();
+  function decayBar() {
+    const elapsed = Date.now() - start;
+    streakFraction = 1 - elapsed / COMBO_TIMEOUT;
+    if (streakFraction > 0) {
+      document.getElementById('streakBarFill').style.width = (streakFraction * 100) + '%';
+      streakTimeout = setTimeout(decayBar, 30);
+    } else {
+      document.getElementById('streakBarFill').style.width = '0%';
+    }
+  }
+  decayBar();
+
+  comboTimer = setTimeout(() => {
+    combo = 0;
+    document.getElementById('comboDisplay').textContent = '';
+    document.getElementById('comboBarFill').style.width = '0%';
+  }, COMBO_TIMEOUT);
+
+  const pct = (combo / MAX_COMBO) * 100;
+  document.getElementById('comboBarFill').style.width = pct + '%';
+  if (combo >= 2) {
+    const el = document.getElementById('comboDisplay');
+    el.textContent = `${combo}x COMBO!`;
+    el.classList.remove('combo-pop');
+    void el.offsetWidth;
+    el.classList.add('combo-pop');
+    el.style.color = combo >= 15 ? '#c84bff' : combo >= 10 ? '#ff4500' : '#ffd700';
+  } else {
+    document.getElementById('comboDisplay').textContent = '';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  GOLDEN BORJIE (Feature 2)
+// ══════════════════════════════════════════════
+let goldenVisible = false;
+function spawnGoldenBorjie() {
+  if (goldenVisible) return;
+  goldenVisible = true;
+  const el = document.getElementById('goldenBorjie');
+  el.style.left = (Math.random() * (window.innerWidth - 100) + 20) + 'px';
+  el.style.top  = (Math.random() * (window.innerHeight - 150) + 60) + 'px';
+  el.style.display = 'block';
+  showToast('✨ Golden Borjie appeared! Click it!', 'gold');
+
+  const timeout = setTimeout(() => {
+    el.style.display = 'none';
+    goldenVisible = false;
+  }, 8000);
+
+  el.onclick = () => {
+    clearTimeout(timeout);
+    const bonus = Math.floor(count * 0.1 + 500) * (1 + goldenLevel * 0.5);
+    count += bonus;
+    allTime += bonus;
+    goldenHits++;
+    save('goldenHits', goldenHits);
+    save('count', count); save('allTime', allTime);
+    el.style.display = 'none';
+    goldenVisible = false;
+    showToast(`✨ GOLDEN BORJIE! +${fmt(bonus)} clicks!`, 'gold');
+    spawnConfetti();
+    spawnParticles(parseInt(el.style.left), parseInt(el.style.top), true);
+    updateUI();
+  };
+}
+
+// Schedule golden spawns
+function scheduleGolden() {
+  const baseInterval = Math.max(15000, 40000 - goldenLevel * 5000);
+  const interval = baseInterval + Math.random() * 20000;
+  setTimeout(() => {
+    spawnGoldenBorjie();
+    scheduleGolden();
+  }, interval);
+}
+scheduleGolden();
+
+// ══════════════════════════════════════════════
+//  AUTO CLICKER UPGRADES (Feature 3)
+// ══════════════════════════════════════════════
+document.getElementById('upgradeAutoClicker').addEventListener('click', () => {
+  const cost = autoCostFn(autoLevel);
+  if (count >= cost) {
+    count -= cost; autoCPS += 1; autoLevel++;
+    save('count', count); save('autoCPS', autoCPS); save('autoLevel', autoLevel);
+    startAutoClicker();
+    showToast('🤖 Auto Clicker upgraded! +1 CPS', 'green');
+    updateUI();
+  }
+});
+
+document.getElementById('upgradeAutoBoost').addEventListener('click', () => {
+  const cost = autoBoostCostFn(autoBoostLevel);
+  if (count >= cost) {
+    count -= cost; autoCPS += 2; autoBoostLevel++;
+    save('count', count); save('autoCPS', autoCPS); save('autoBoostLevel', autoBoostLevel);
+    startAutoClicker();
+    showToast('🚀 Auto Boost! +2 CPS', 'green');
+    updateUI();
+  }
+});
+
+// ══════════════════════════════════════════════
+//  CRIT UPGRADE (Feature 4 — Critical Hits)
+// ══════════════════════════════════════════════
+document.getElementById('upgradeLuck').addEventListener('click', () => {
+  const cost = luckCostFn(luckLevel);
+  if (count >= cost) {
+    count -= cost; critChance = Math.min(critChance + 5, 80); luckLevel++;
+    save('count', count); save('critChance', critChance); save('luckLevel', luckLevel);
+    showToast(`🍀 Crit Chance now ${critChance}%!`, 'purple');
+    updateUI();
+  }
+});
+
+// ══════════════════════════════════════════════
+//  GOLDEN SPAWN UPGRADE (Feature 5)
+// ══════════════════════════════════════════════
+document.getElementById('upgradeGolden').addEventListener('click', () => {
+  const cost = goldenUpgradeCostFn(goldenLevel);
+  if (count >= cost) {
+    count -= cost; goldenLevel++;
+    save('count', count); save('goldenLevel', goldenLevel);
+    showToast('✨ Golden Borjie spawns more & gives more!', 'gold');
+    updateUI();
+  }
+});
+
+// ══════════════════════════════════════════════
+//  CLICK POWER UPGRADE
+// ══════════════════════════════════════════════
+document.getElementById('upgradeClickPower').addEventListener('click', () => {
+  const cost = upgradeCostFn(upgradeLevel);
+  if (count >= cost) {
+    count -= cost; clickPower++; upgradeLevel++;
+    save('count', count); save('clickPower', clickPower); save('upgradeLevel', upgradeLevel);
+    showToast(`👆 Click Power is now ${clickPower}!`, 'green');
+    updateUI();
+  }
+});
+
+// ══════════════════════════════════════════════
+//  REBIRTH
+// ══════════════════════════════════════════════
+document.getElementById('rebirthButton').addEventListener('click', () => {
+  if (count < 10000) return;
+  if (!confirm('🌀 Rebirth? You lose all clicks but get x2 multiplier forever!')) return;
+  count = 0; rebirths++; multiplier *= 2;
+  save('count', count); save('rebirths', rebirths); save('multiplier', multiplier);
+  document.getElementById('clickButton').classList.add('prestige-flash');
+  setTimeout(() => document.getElementById('clickButton').classList.remove('prestige-flash'), 1000);
+  spawnConfetti();
+  showMilestone('🌀 REBORN!', `Multiplier is now x${multiplier}`);
+  showToast(`🌀 Rebirth #${rebirths}! Multiplier: x${multiplier}`, 'purple');
+  startAutoClicker();
+  updateUI();
+});
+
+// ══════════════════════════════════════════════
+//  MILESTONE BANNER (Feature 6)
+// ══════════════════════════════════════════════
+function showMilestone(title, text) {
+  const b = document.getElementById('milestoneBanner');
+  document.getElementById('milestoneTitle').textContent = title;
+  document.getElementById('milestoneText').textContent = text;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 3000);
+}
+
+// Milestone click thresholds
+const MILESTONES = [100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+let lastMilestone = load('lastMilestone', 0);
+function checkMilestones() {
+  for (const m of MILESTONES) {
+    if (allTime >= m && m > lastMilestone) {
+      lastMilestone = m;
+      save('lastMilestone', lastMilestone);
+      showMilestone(`🎉 ${fmt(m)} CLICKS!`, 'Keep grinding, Borjie!');
+      spawnConfetti();
+      break;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+//  CONFETTI (Feature 7 — Celebrations)
+// ══════════════════════════════════════════════
+function spawnConfetti() {
+  const colors = ['#ff4500','#ffd700','#4cff91','#00cfff','#c84bff','#ff69b4'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left: ${Math.random()*100}vw;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      --dur: ${1.5 + Math.random()*1.5}s;
+      width: ${6+Math.random()*8}px;
+      height: ${6+Math.random()*8}px;
+      transform: rotate(${Math.random()*360}deg);
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  TOAST NOTIFICATIONS
+// ══════════════════════════════════════════════
+function showToast(msg, type = 'green') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toastOut 0.4s ease forwards';
+    setTimeout(() => t.remove(), 400);
+  }, 2800);
+}
+
+// ══════════════════════════════════════════════
+//  PARTICLE EFFECTS
+// ══════════════════════════════════════════════
+function spawnParticles(x, y, isCrit) {
+  const count = isCrit ? 20 : 8;
+  const colors = isCrit
+    ? ['#ffd700','#ffa500','#ff6600']
+    : ['#ff4500','#ff8844','#ffffff','#ffcc44'];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
+    const dist = 60 + Math.random() * (isCrit ? 120 : 60);
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist - 30;
+    const size = isCrit ? 6 + Math.random() * 8 : 4 + Math.random() * 5;
+    p.className = 'particle';
+    p.style.cssText = `
+      left:${x}px; top:${y}px;
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${tx}px; --ty:${ty}px;
+      --dur:${0.6 + Math.random()*0.4}s;
+      box-shadow: 0 0 4px currentColor;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1000);
+  }
+  if (isCrit) {
+    const flash = document.createElement('div');
+    flash.className = 'crit-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 400);
+    document.body.classList.add('shaking');
+    setTimeout(() => document.body.classList.remove('shaking'), 300);
+  }
+}
+
+function spawnFloatText(x, y, text, color) {
+  const el = document.createElement('div');
+  el.className = 'float-text';
+  el.style.cssText = `left:${x - 20}px; top:${y - 20}px; color:${color};`;
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+function spawnCritEffect(x, y, amount) {
+  spawnFloatText(x - 40, y - 50, `💥 CRIT! +${fmt(amount)}`, '#ffd700');
+}
+
+function spawnFlyingBorjie(x, y) {
+  const img = document.createElement('div');
+  img.style.cssText = `
+    position:fixed; left:${x-20}px; top:${y-20}px;
+    width:40px; height:40px; border-radius:50%;
+    background-image:url('IMG_8904.JPG'); background-size:cover;
+    pointer-events:none; z-index:999;
+    animation: floatUp 1s ease-out forwards;
+  `;
+  // inject keyframe-like via style
+  document.body.appendChild(img);
+  img.animate([
+    { transform: 'scale(1) translateY(0)', opacity: 1 },
+    { transform: 'scale(1.3) translateY(-80px)', opacity: 0 }
+  ], { duration: 900, easing: 'ease-out', fill: 'forwards' }).onfinish = () => img.remove();
+}
+
+// ══════════════════════════════════════════════
+//  UPGRADE BUTTONS ORIGINAL
+// ══════════════════════════════════════════════
+
+// ══════════════════════════════════════════════
+//  RESET & ADMIN
+// ══════════════════════════════════════════════
+document.getElementById('resetProgress').addEventListener('click', () => {
+  if (confirm('💥 Reset EVERYTHING? This cannot be undone!')) {
+    localStorage.clear();
+    location.reload();
+  }
+});
+
+document.getElementById('adminLogin').addEventListener('click', () => {
+  const u = prompt('Username:');
+  const p = prompt('Password:');
+  if (u === 'Gussy123' && p === 'gus') {
+    document.getElementById('adminPanel').style.display = 'block';
+  } else {
+    showToast('❌ Access Denied!', 'red');
+  }
+});
 
 function giveClicks(amount) {
-    let count = parseInt(localStorage.getItem('clickCount')) || 0;
-    count += amount;
-    localStorage.setItem('clickCount', count);
-    document.getElementById("count").textContent = count;
+  count += amount; allTime += amount;
+  save('count', count); save('allTime', allTime);
+  showToast(`✅ +${fmt(amount)} clicks added!`, 'green');
+  spawnConfetti();
+  updateUI();
+}
+
+function toggleGodMode() {
+  godMode = !godMode;
+  showToast(godMode ? '⚡ GOD MODE ON!' : '⚡ God Mode off', godMode ? 'gold' : 'red');
+  if (godMode) {
+    if (!autoInterval) startAutoClicker();
+    showToast('⚡ Infinite speed + 9999 CPS active!', 'gold');
+  } else {
+    startAutoClicker();
+  }
 }
 
 function resetGame() {
-    if (confirm("Are you sure you want to RESET EVERYTHING?")) {
-        localStorage.clear();
-        location.reload();
-    }
+  if (confirm('💥 RESET EVERYTHING?')) { localStorage.clear(); location.reload(); }
 }
 
-function closeAdminPanel() {
-    document.getElementById("adminPanel").style.display = "none";
+function closeAdmin() {
+  document.getElementById('adminPanel').style.display = 'none';
 }
+
+document.getElementById('infoButton').addEventListener('click', () => {
+  document.getElementById('infoModal').classList.add('active');
+});
+
+// ══════════════════════════════════════════════
+//  INIT & TICK
+// ══════════════════════════════════════════════
+startAutoClicker();
+renderAchievements();
+updateUI();
+
+// Every second: check milestones
+setInterval(() => {
+  checkMilestones();
+  checkAchievements();
+}, 1000);
 </script>
-
-
-<!-- Buttons -->
-<div class="btn-container">
-  <button class="upgrade-button" id="upgradeClickPower">Upgrade Click (+1, Cost: 1000)</button>
-  <button class="rebirth-button" id="rebirthButton">Rebirth (x2 Multiplier, Cost: 10000)</button>
-</div>
-
-<!-- Clicker -->
-<button id="clickButton" class="click-button"></button>
-
-<!-- Reset Everything -->
-<button class="reset-button" id="resetProgress">Reset Everything</button>
-
-<script>
-// Load Data (Now properly updates everything!)
-let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
-let rebirths = localStorage.getItem('rebirths') ? parseInt(localStorage.getItem('rebirths')) : 0;
-let clickPower = localStorage.getItem('clickPower') ? parseInt(localStorage.getItem('clickPower')) : 1;
-let multiplier = localStorage.getItem('multiplier') ? parseInt(localStorage.getItem('multiplier')) : 1;
-
-document.getElementById("count").textContent = count;
-document.getElementById("rebirths").textContent = rebirths;
-
-// Click Button (100ms Delay)
-let clickCooldown = false;
-document.getElementById("clickButton").addEventListener("click", (event) => {
-    if (!clickCooldown) {
-        clickCooldown = true;
-        count += clickPower * multiplier;
-        document.getElementById("count").textContent = count;
-        localStorage.setItem('clickCount', count);
-        createFloatingImage(event.clientX, event.clientY);
-        createSmallBorjie();
-        setTimeout(() => { clickCooldown = false; }, 0); // 100ms delay
-    }
-});
-
-// Floating Click Animation
-function createFloatingImage(x, y) {
-    let borjie = document.createElement("div");
-    borjie.classList.add("floating-image");
-    borjie.style.backgroundImage = "url('IMG_8904.JPG')";
-    borjie.style.left = `${x}px`;
-    borjie.style.top = `${y}px`;
-    document.body.appendChild(borjie);
-    setTimeout(() => borjie.remove(), 1500);
-}
-let leaderboard = [
-  { name: "Player1", score: 500 },
-  { name: "Player2", score: 450 },
-  { name: "Player3", score: 300 },
-];
-
-function updateLeaderboard() {
-  let leaderboardElement = document.querySelector(".leaderboard");
-  leaderboardElement.innerHTML = "";
-
-  leaderboard
-    .sort((a, b) => b.score - a.score)
-    .forEach((player, index) => {
-      let entry = document.createElement("div");
-      entry.classList.add("leaderboard-entry");
-      entry.innerHTML = `${index + 1}. ${player.name} - ${player.score} pts`;
-      leaderboardElement.appendChild(entry);
-    });
-
-  dropConfetti(); // Celebrate top changes
-}
-
-
-// Small Bottom Borjie Animation
-function createSmallBorjie() {
-    let borjie = document.createElement("div");
-    borjie.classList.add("borjie-small");
-    borjie.style.backgroundImage = "url('IMG_8904.JPG')";
-    borjie.style.left = `${Math.random() * window.innerWidth}px`;
-    document.body.appendChild(borjie);
-    setTimeout(() => borjie.remove(), 3000);
-}
-
-// Upgrade Click Power Button (Fixed)
-document.getElementById("upgradeClickPower").addEventListener("click", () => {
-    if (count >= 1000) {
-        count -= 1000;
-        clickPower++;
-        document.getElementById("count").textContent = count;
-        localStorage.setItem('clickCount', count);
-        localStorage.setItem('clickPower', clickPower);
-    } else {
-        alert("You need 1000 clicks!");
-    }
-});
-
-// Rebirth Button (Fixed)
-document.getElementById("rebirthButton").addEventListener("click", () => {
-    if (count >= 10000) {
-        count = 0;
-        rebirths++;
-        multiplier *= 2;
-        document.getElementById("count").textContent = count;
-        document.getElementById("rebirths").textContent = rebirths;
-        localStorage.setItem('clickCount', count);
-        localStorage.setItem('rebirths', rebirths);
-        localStorage.setItem('multiplier', multiplier);
-        alert("Rebirth Successful! Click power now x2!");
-    } else {
-        alert("You need 10,000 clicks!");
-    }
-});
-
-document.addEventListener("scroll", () => {
-  const img = document.createElement("img");
-  img.src = "IMG_8904.png";
-  img.classList.add("IMG_8904");
-
-  img.style.left = Math.random() * window.innerWidth + "px";
-  img.style.width = `${Math.random() * 50 + 30}px`;
-
-  document.body.appendChild(img);
-
-  setTimeout(() => img.remove(), 3000);
-});
-
-
-// Reset Button (Fixed & Confirmed)
-document.getElementById("resetProgress").addEventListener("click", () => {
-    if (confirm("Reset EVERYTHING?")) {
-        localStorage.clear();
-        location.reload();
-    }
-});
-</script>
-
 </body>
 </html>
