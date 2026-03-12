@@ -206,6 +206,23 @@ body {
 
 .section-title { font-family:'Bangers',cursive; font-size:1.1rem; letter-spacing:2px; color:#888; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:6px; }
 
+/* ═══ ABOUT ME BIG BUTTON ═══ */
+.about-top-btn {
+  position: fixed; top: 12px; right: 12px; 
+  background: linear-gradient(135deg, #c84bff, #ff4500); 
+  border: 2px solid var(--gold); 
+  color: white; padding: 10px 20px; 
+  border-radius: 12px; cursor: pointer; 
+  font-family: 'Bangers', cursive; font-size: 1.4rem; 
+  letter-spacing: 2px; text-decoration: none; 
+  z-index: 200; box-shadow: 0 0 15px rgba(200, 75, 255, 0.5); 
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.about-top-btn:hover {
+  transform: scale(1.05); 
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+}
+
 
 /* ═══ SPECIAL UPGRADES ═══ */
 .sup-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:420px;overflow-y:auto;padding-right:4px;}
@@ -241,8 +258,6 @@ body {
 /* ═══ PRESTIGE ═══ */
 .prestige-corner-btn{position:fixed;bottom:12px;right:12px;background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,100,0,.2));border:1px solid rgba(255,215,0,.5);color:white;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;z-index:200;font-family:'Nunito',sans-serif;}
 .prestige-corner-btn:hover{background:linear-gradient(135deg,rgba(255,215,0,.35),rgba(255,100,0,.35));}
-.about-corner-link{position:fixed;bottom:12px;right:160px;color:rgba(255,255,255,.4);font-size:.78rem;font-weight:700;text-decoration:none;z-index:200;letter-spacing:1px;transition:color .2s;}
-.about-corner-link:hover{color:var(--gold);}
 .prestige-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#1a0d2e,#0d0515);border:2px solid rgba(255,215,0,.4);padding:24px;border-radius:18px;z-index:9998;min-width:300px;max-width:480px;width:90%;box-shadow:0 0 60px rgba(255,215,0,.15);max-height:80vh;overflow-y:auto;}
 .prestige-modal.active{display:block;}
 .prestige-modal h2{font-family:'Bangers',cursive;font-size:2rem;color:var(--gold);letter-spacing:3px;text-align:center;margin-bottom:4px;}
@@ -266,6 +281,8 @@ body {
 <canvas id="starfield"></canvas>
 <button class="top-left-btn" id="adminLogin">🔑 Admin</button>
 <button class="reset-btn" id="resetProgress">🗑 Reset</button>
+<a href="about.html" class="about-top-btn">🙋‍♂️ ABOUT ME</a>
+
 <div id="goldenBorjie"></div>
 <div id="toastContainer"></div>
 <div id="milestoneBanner"><h2 id="milestoneTitle"></h2><p id="milestoneText"></p></div>
@@ -291,7 +308,7 @@ body {
 </div>
 
 <button class="prestige-corner-btn" id="prestigeOpenBtn">&#x1F451; Prestige Shop</button>
-<a href="about.html" class="about-corner-link">About Me</a>
+
 <div class="prestige-modal" id="prestigeModal">
   <h2>&#x1F451; PRESTIGE SHOP</h2>
   <div class="p-token-disp" id="tokenDisp">&#x1FA99; Tokens: 0</div>
