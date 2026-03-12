@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Borjie</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #ff4500;
+  --gold: #ffd700;
+  --purple: #c84bff;
+  --panel: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: radial-gradient(ellipse at 20% 50%, #1a0533 0%, #0d0d1a 60%);
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── STARFIELD ── */
+#starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+/* ── BACK BUTTON ── */
+.back-btn {
+  position: fixed; top: 18px; left: 20px; z-index: 100;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.75); text-decoration: none;
+  padding: 9px 18px; border-radius: 50px; font-size: .88rem; font-weight: 700;
+  transition: background .2s, color .2s, transform .15s;
+  backdrop-filter: blur(8px);
+}
+.back-btn:hover { background: rgba(255,255,255,.15); color: white; transform: translateX(-3px); }
+.back-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ── WRAPPER ── */
+.page {
+  position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto;
+  padding: 100px 24px 80px;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.hero-avatar {
+  width: 140px; height: 140px; border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(255,215,0,.5);
+  box-shadow: 0 0 40px rgba(255,100,0,.35), 0 0 80px rgba(200,75,255,.15);
+  margin-bottom: 24px;
+  animation: heroFloat 3s ease-in-out infinite alternate;
+}
+@keyframes heroFloat { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+.hero h1 {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(3rem, 8vw, 5rem);
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #ff4500, #ffd700, #c84bff);
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(255,100,0,.4));
+  margin-bottom: 8px;
+}
+@keyframes shimmer { to { background-position: 200% center; } }
+.hero .tagline {
+  font-size: 1.05rem; color: rgba(255,255,255,.55); letter-spacing: 1px;
+  font-weight: 600;
+}
+.hero .badges {
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 20px;
+}
+.badge {
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.13);
+  border-radius: 50px; padding: 5px 14px; font-size: .8rem; font-weight: 700;
+  color: rgba(255,255,255,.7); letter-spacing: .5px;
+}
+.badge.gold   { border-color: rgba(255,215,0,.4);  color: #ffd700; background: rgba(255,215,0,.08); }
+.badge.purple { border-color: rgba(200,75,255,.4); color: #d97aff; background: rgba(200,75,255,.08); }
+.badge.red    { border-color: rgba(255,69,0,.4);   color: #ff7a50; background: rgba(255,69,0,.08); }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin: 48px 0 40px;
+}
+.divider hr { flex: 1; border: none; border-top: 1px solid rgba(255,255,255,.1); }
+.divider span {
+  font-family: 'Bangers', cursive; font-size: 1.1rem;
+  letter-spacing: 3px; color: rgba(255,255,255,.3);
+}
+
+/* ── ABOUT SECTION ── */
+.about-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 40px;
+  backdrop-filter: blur(12px);
+  margin-bottom: 40px;
+}
+.about-card h2 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem; letter-spacing: 3px;
+  color: var(--gold); margin-bottom: 18px;
+}
+.about-card p {
+  font-size: 1rem; line-height: 1.85;
+  color: rgba(255,255,255,.78);
+  margin-bottom: 14px;
+}
+.about-card p:last-child { margin-bottom: 0; }
+.highlight { color: var(--gold); font-weight: 700; }
+.highlight-purple { color: #d97aff; font-weight: 700; }
+
+/* ── GALLERY ── */
+.gallery-section { margin-bottom: 40px; }
+.gallery-section h2 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem; letter-spacing: 3px; color: var(--gold);
+  text-align: center; margin-bottom: 24px;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.gallery-item {
+  position: relative; border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.1);
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  transition: transform .25s, box-shadow .25s;
+}
+.gallery-item:hover {
+  transform: scale(1.03) translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 30px rgba(200,75,255,.2);
+}
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform .4s;
+}
+.gallery-item:hover img { transform: scale(1.07); }
+.gallery-item .caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.75) 0%, transparent 100%);
+  padding: 20px 12px 10px;
+  font-size: .78rem; font-weight: 700; letter-spacing: 1px;
+  color: rgba(255,255,255,.7); opacity: 0;
+  transition: opacity .25s;
+}
+.gallery-item:hover .caption { opacity: 1; }
+
+/* ── LIGHTBOX ── */
+#lightbox {
+  display: none; position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.9); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+}
+#lightbox.open { display: flex; }
+#lightbox img {
+  max-width: 90vw; max-height: 88vh;
+  border-radius: 14px;
+  box-shadow: 0 0 80px rgba(0,0,0,.8);
+  animation: lbIn .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes lbIn { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+#lightbox .lb-close {
+  position: absolute; top: 20px; right: 24px;
+  background: rgba(255,255,255,.12); border: none; color: white;
+  width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+#lightbox .lb-close:hover { background: rgba(255,255,255,.25); }
+
+/* ── WHY I BUILT IT ── */
+.why-card {
+  background: linear-gradient(135deg, rgba(255,69,0,.08), rgba(200,75,255,.08));
+  border: 1px solid rgba(200,75,255,.2);
+  border-radius: 20px; padding: 36px 40px;
+  margin-bottom: 40px;
+}
+.why-card h2 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem; letter-spacing: 3px;
+  color: #d97aff; margin-bottom: 18px;
+}
+.why-card p {
+  font-size: 1rem; line-height: 1.85;
+  color: rgba(255,255,255,.78); margin-bottom: 14px;
+}
+.why-card p:last-child { margin-bottom: 0; }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.footer p { font-size: .82rem; color: rgba(255,255,255,.25); line-height: 2; }
+.footer a {
+  color: rgba(255,215,0,.5); text-decoration: none;
+  transition: color .2s;
+}
+.footer a:hover { color: var(--gold); }
+
+@media (max-width: 600px) {
+  .about-card, .why-card { padding: 24px 20px; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .page { padding: 80px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<!-- Back button -->
+<a href="index.html" class="back-btn">
+  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+  Back to Game
+</a>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <button class="lb-close" id="lbClose">✕</button>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <img src="IMG_8904.JPG" alt="Borjie" class="hero-avatar">
+    <h1>BORJIE</h1>
+    <p class="tagline">Creator · Clicker Enthusiast · Professional Yapper</p>
+    <div class="badges">
+      <span class="badge gold">🏆 Game Dev</span>
+      <span class="badge purple">🎮 Clicker Addict</span>
+      <span class="badge red">🔥 Certified Borjie</span>
+    </div>
+  </div>
+
+  <!-- WHO IS BORJIE -->
+  <div class="about-card">
+    <h2>👤 Who is Borjie?</h2>
+    <p>
+      Hey! I'm <span class="highlight">Borjie</span> — the person behind this whole ridiculous clicker game.
+      I'm just someone who spends way too much time on the internet, clicks things for fun, and at some
+      point decided: <em>"what if I made other people click things too?"</em>
+    </p>
+    <p>
+      By day I'm a normal human being. By night I'm engineering the most absurd idle game mechanics
+      I can think of, balancing crit multipliers at 2am, and wondering if anyone will ever reach
+      <span class="highlight-purple">Cosmic Borjie</span> rank.
+    </p>
+    <p>
+      I go by Borjie online. Yes, it's a real nickname. No, I won't explain it further.
+    </p>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="gallery-section">
+    <h2>📸 Gallery</h2>
+    <div class="gallery-grid">
+      <div class="gallery-item" data-src="IMG_8905.JPG">
+        <img src="IMG_8905.JPG" alt="Borjie photo 1" loading="lazy">
+        <div class="caption">Just Borjie things</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_8906.JPG">
+        <img src="IMG_8906.JPG" alt="Borjie photo 2" loading="lazy">
+        <div class="caption">In the wild</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_8907.JPG">
+        <img src="IMG_8907.JPG" alt="Borjie photo 3" loading="lazy">
+        <div class="caption">The legend himself</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY I BUILT IT -->
+  <div class="why-card">
+    <h2>🛠️ Why I Built This</h2>
+    <p>
+      Honestly? I wanted to see if I could. I've always loved incremental games — the satisfying loop
+      of watching numbers get bigger, unlocking new things, and the dopamine hit of a
+      <span class="highlight">golden Borjie</span> appearing at just the right moment.
+    </p>
+    <p>
+      So I sat down and built <span class="highlight">Borjie Clicker</span> from scratch — pure HTML, CSS,
+      and JavaScript, no frameworks, no engines. Just vibes and an unhealthy number of hours.
+      It started small and kept growing: rebirths, prestige systems, combo mechanics, frenzy events,
+      emoji currency tiers...
+    </p>
+    <p>
+      If you're reading this, you've somehow found the About page, which means you're either
+      genuinely curious or you've been clicking for so long you needed a break.
+      Either way — <span class="highlight-purple">thank you for playing.</span>
+    </p>
+  </div>
+
+  <div class="divider">
+    <hr><span>✦</span><hr>
+  </div>
+
+  <div class="footer">
+    <p>Built with ❤️ and way too many late nights by <strong>Borjie</strong></p>
+    <p><a href="index.html">← Back to Borjie Clicker</a></p>
+  </div>
+
+</div>
+
+<script>
+// Starfield
+(function(){
+  var cv=document.getElementById('starfield'),cx=cv.getContext('2d'),stars=[];
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  function init(){stars=[];for(var i=0;i<120;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*1.4,op:Math.random(),sp:Math.random()*.25+.04});}
+  function draw(){cx.clearRect(0,0,cv.width,cv.height);stars.forEach(function(s){cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle='rgba(255,255,255,'+s.op+')';cx.fill();s.op+=s.sp*.025;if(s.op>1||s.op<0)s.sp*=-1;});requestAnimationFrame(draw);}
+  resize();init();draw();window.addEventListener('resize',function(){resize();init();});
+})();
+
+// Lightbox
+var lb=document.getElementById('lightbox'),lbImg=document.getElementById('lbImg');
+document.querySelectorAll('.gallery-item').forEach(function(el){
+  el.addEventListener('click',function(){
+    lbImg.src=el.getAttribute('data-src');
+    lb.classList.add('open');
+  });
+});
+document.getElementById('lbClose').addEventListener('click',function(){lb.classList.remove('open');});
+lb.addEventListener('click',function(e){if(e.target===lb)lb.classList.remove('open');});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')lb.classList.remove('open');});
+</script>
+</body>
+</html>
