@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Borjie Clicker – Ultimate Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -16,6 +16,7 @@
   --border: rgba(255,255,255,0.12);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: 'Nunito', sans-serif;
   background: radial-gradient(ellipse at 20% 50%, #1a0533 0%, #0d0d1a 60%);
@@ -205,6 +206,58 @@ body {
 
 .section-title { font-family:'Bangers',cursive; font-size:1.1rem; letter-spacing:2px; color:#888; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:6px; }
 
+
+/* ═══ SPECIAL UPGRADES ═══ */
+.sup-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:420px;overflow-y:auto;padding-right:4px;}
+.sup-grid::-webkit-scrollbar{width:4px;}
+.sup-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:4px;}
+.sup-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;cursor:pointer;transition:background .2s,transform .15s;position:relative;text-align:left;}
+.sup-card:hover:not(.sup-maxed):not(.sup-locked){background:rgba(255,255,255,.1);transform:translateY(-2px);}
+.sup-card.sup-locked{opacity:.35;cursor:not-allowed;}
+.sup-card.sup-maxed{opacity:.55;cursor:not-allowed;border-color:rgba(255,215,0,.35);}
+.sup-card .sup-lv{position:absolute;top:6px;right:7px;font-size:.68rem;font-family:'Bangers',cursive;color:#aaa;}
+.sup-card.sup-maxed .sup-lv{color:var(--gold);}
+.sup-card .sup-icon{font-size:1.4rem;display:block;margin-bottom:3px;}
+.sup-card .sup-name{font-family:'Bangers',cursive;font-size:.92rem;letter-spacing:1px;}
+.sup-card .sup-desc{font-size:.66rem;color:#999;margin:2px 0 4px;line-height:1.3;}
+.sup-card .sup-cost{font-size:.7rem;color:var(--gold);font-weight:700;}
+.sup-card.rar-common{border-color:rgba(100,255,150,.25);}
+.sup-card.rar-rare{border-color:rgba(80,160,255,.4);box-shadow:0 0 8px rgba(80,160,255,.1);}
+.sup-card.rar-epic{border-color:rgba(200,75,255,.5);box-shadow:0 0 10px rgba(200,75,255,.15);}
+.sup-card.rar-legend{border-color:rgba(255,215,0,.6);animation:legendPulse 2s ease-in-out infinite;}
+@keyframes legendPulse{0%,100%{box-shadow:0 0 14px rgba(255,215,0,.2);}50%{box-shadow:0 0 28px rgba(255,215,0,.5);}}
+
+/* ═══ FRENZY ═══ */
+#frenzyLabel{font-family:'Bangers',cursive;font-size:1.2rem;letter-spacing:2px;color:#ff4500;text-shadow:0 0 10px rgba(255,100,0,.8);animation:frenzyPulse .4s ease-in-out infinite alternate;display:none;}
+@keyframes frenzyPulse{from{transform:scale(1);}to{transform:scale(1.08);}}
+#frenzyBarWrap{width:200px;height:10px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;border:1px solid rgba(255,100,0,.3);display:none;}
+#frenzyFill{height:100%;background:linear-gradient(90deg,#ff4500,#ffd700,#ff4500);background-size:200%;border-radius:10px;animation:frenzyShimmer .5s linear infinite;transition:width .1s linear;}
+@keyframes frenzyShimmer{to{background-position:200% 0;}}
+
+/* ═══ BACKGROUND BORJIES ═══ */
+.bg-borjie{position:fixed;border-radius:50%;background-image:url('IMG_8904.JPG');background-size:cover;pointer-events:none;z-index:0;opacity:0;animation:bgFly var(--dur) linear forwards;}
+@keyframes bgFly{0%{opacity:0;transform:translateY(0) rotate(0deg);}10%{opacity:.14;}90%{opacity:.14;}100%{opacity:0;transform:translateY(-110vh) rotate(var(--rot));}}
+
+/* ═══ PRESTIGE ═══ */
+.prestige-corner-btn{position:fixed;bottom:12px;right:12px;background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,100,0,.2));border:1px solid rgba(255,215,0,.5);color:white;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;z-index:200;font-family:'Nunito',sans-serif;}
+.prestige-corner-btn:hover{background:linear-gradient(135deg,rgba(255,215,0,.35),rgba(255,100,0,.35));}
+.about-corner-link{position:fixed;bottom:12px;right:160px;color:rgba(255,255,255,.4);font-size:.78rem;font-weight:700;text-decoration:none;z-index:200;letter-spacing:1px;transition:color .2s;}
+.about-corner-link:hover{color:var(--gold);}
+.prestige-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#1a0d2e,#0d0515);border:2px solid rgba(255,215,0,.4);padding:24px;border-radius:18px;z-index:9998;min-width:300px;max-width:480px;width:90%;box-shadow:0 0 60px rgba(255,215,0,.15);max-height:80vh;overflow-y:auto;}
+.prestige-modal.active{display:block;}
+.prestige-modal h2{font-family:'Bangers',cursive;font-size:2rem;color:var(--gold);letter-spacing:3px;text-align:center;margin-bottom:4px;}
+.p-token-disp{text-align:center;font-size:1rem;color:var(--gold);font-weight:700;margin-bottom:14px;}
+.p-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);margin-bottom:8px;cursor:pointer;transition:background .2s,transform .1s;}
+.p-item:hover:not(.p-bought){background:rgba(255,215,0,.1);transform:translateX(4px);}
+.p-item.p-bought{opacity:.5;cursor:not-allowed;}
+.p-icon{font-size:1.8rem;flex-shrink:0;}
+.p-name{font-family:'Bangers',cursive;font-size:1rem;letter-spacing:1px;color:var(--gold);}
+.p-desc{font-size:.73rem;color:#bbb;margin-top:2px;}
+.p-cost{margin-left:auto;font-size:.8rem;color:var(--purple);font-weight:700;white-space:nowrap;}
+.p-close{display:block;width:100%;margin-top:10px;padding:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:white;border-radius:8px;cursor:pointer;font-weight:700;font-family:'Nunito',sans-serif;}
+#tierBadge{font-size:.7rem;color:#555;text-align:center;letter-spacing:1px;min-height:1rem;}
+#tierBadge.lit{color:var(--gold);}
+
 @media(max-width:700px){ .game-wrapper{grid-template-columns:1fr;} .rebirth-row{flex-direction:column;} }
 </style>
 </head>
@@ -235,6 +288,15 @@ body {
   <p>💀 Borjie Bonker: 50,000+</p><p>🎣 Borjie Baiter: 100,000+</p>
   <p>👑 Grand Borjie: 500,000+</p><p>🌌 Cosmic Borjie: 1,000,000+</p>
   <button onclick="document.getElementById('infoModal').classList.remove('active')">Close</button>
+</div>
+
+<button class="prestige-corner-btn" id="prestigeOpenBtn">&#x1F451; Prestige Shop</button>
+<a href="about.html" class="about-corner-link">About Me</a>
+<div class="prestige-modal" id="prestigeModal">
+  <h2>&#x1F451; PRESTIGE SHOP</h2>
+  <div class="p-token-disp" id="tokenDisp">&#x1FA99; Tokens: 0</div>
+  <div id="prestigeList"></div>
+  <button class="p-close" onclick="document.getElementById('prestigeModal').classList.remove('active')">&#x2716; Close</button>
 </div>
 
 <div class="game-wrapper">
@@ -279,7 +341,7 @@ body {
 
     <!-- ═══ REBIRTH BUTTONS ═══ -->
     <div>
-      <div class="section-title">Rebirth <span style="font-size:.65rem;letter-spacing:0;font-family:Nunito;color:#777">(10,000 each)</span></div>
+      <div class="section-title">Rebirth <span id="rebirthNextLabel" style="font-size:.62rem;letter-spacing:0;font-family:Nunito;color:#777;">(next: 10K)</span></div>
 
       <!-- Live preview strip -->
       <div class="rebirth-preview" id="rebirthPreview" style="margin-bottom:8px;">
@@ -323,7 +385,14 @@ body {
     <div class="streak-bar-wrap">
       <div class="combo-bar-bg"><div class="streak-bar-fill" id="streakBarFill"></div></div>
     </div>
+    <div id="frenzyLabel">&#x26A1; CLICK FRENZY! &#x26A1;</div>
+    <div id="frenzyBarWrap"><div id="frenzyFill" style="width:100%"></div></div>
     <div style="text-align:center;color:#666;font-size:.8rem;">All-time: <span style="color:#aaa;" id="allTimeCount">0</span></div>
+    <div id="tierBadge"></div>
+    <div class="panel" style="width:100%;">
+      <div class="section-title">&#x26A1; Special Upgrades</div>
+      <div class="sup-grid" id="supGrid"></div>
+    </div>
   </div>
 
   <!-- RIGHT -->
@@ -337,7 +406,8 @@ body {
       <div style="font-size:.82rem;color:#aaa;line-height:1.9;">
         👆 Click Power: <span style="color:white;font-weight:700;" id="statClickPower">1</span><br>
         ⚡ Multiplier: <span style="color:white;font-weight:700;" id="statMult">1</span>x<br>
-        🍀 Crit Chance: <span style="color:white;font-weight:700;" id="statCrit">5</span>%<br>
+        &#x1F340; Crit Chance: <span style="color:white;font-weight:700;" id="statCrit">5</span>%<br>
+        &#x1F4A5; Crit Dmg: <span style="color:white;font-weight:700;" id="statCritDmg">3</span>x<br>
         🤖 Auto CPS: <span style="color:white;font-weight:700;" id="statCPS">0</span><br>
         🏅 Golden Hits: <span style="color:white;font-weight:700;" id="statGolden">0</span><br>
         💥 Biggest Crit: <span style="color:white;font-weight:700;" id="statBigCrit">0</span>
@@ -350,129 +420,271 @@ body {
 <script>
 // ── STARFIELD ──
 (function(){
-  const cv=document.getElementById('starfield'),cx=cv.getContext('2d');
-  let stars=[];
+  var cv=document.getElementById('starfield'),cx=cv.getContext('2d');
+  var stars=[];
   function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-  function init(){stars=[];for(let i=0;i<160;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*1.5,op:Math.random(),sp:Math.random()*.3+.05});}
-  function draw(){cx.clearRect(0,0,cv.width,cv.height);stars.forEach(s=>{cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle=`rgba(255,255,255,${s.op})`;cx.fill();s.op+=s.sp*.03;if(s.op>1||s.op<0)s.sp*=-1;});requestAnimationFrame(draw);}
-  resize();init();draw();window.addEventListener('resize',()=>{resize();init();});
+  function init(){stars=[];for(var i=0;i<160;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*1.5,op:Math.random(),sp:Math.random()*.3+.05});}
+  function draw(){cx.clearRect(0,0,cv.width,cv.height);stars.forEach(function(s){cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle='rgba(255,255,255,'+s.op+')';cx.fill();s.op+=s.sp*.03;if(s.op>1||s.op<0)s.sp*=-1;});requestAnimationFrame(draw);}
+  resize();init();draw();window.addEventListener('resize',function(){resize();init();});
 })();
 
-// ── STATE ──
-const LS=localStorage;
-const load=(k,d)=>{const v=LS.getItem(k);return v!==null?JSON.parse(v):d;};
-const save=(k,v)=>LS.setItem(k,JSON.stringify(v));
+// ── STORAGE ──
+var LS=localStorage;
+function load(k,d){var v=LS.getItem(k);return v!==null?JSON.parse(v):d;}
+function save(k,v){LS.setItem(k,JSON.stringify(v));}
 
-let count=load('count',0),allTime=load('allTime',0),rebirths=load('rebirths',0);
-let clickPower=load('clickPower',1),multiplier=load('multiplier',1);
-let autoCPS=load('autoCPS',0),critChance=load('critChance',5);
-let goldenLevel=load('goldenLevel',0),goldenHits=load('goldenHits',0),biggestCrit=load('biggestCrit',0);
-let dailyStreak=load('dailyStreak',0),lastLogin=load('lastLogin',null);
-let godMode=false;
-let upgradeLevel=load('upgradeLevel',0),autoLevel=load('autoLevel',0);
-let autoBoostLevel=load('autoBoostLevel',0),luckLevel=load('luckLevel',0);
-let achievements=load('achievements',{});
-const REBIRTH_COST=10000;
+// ── STATE ──
+var count=load('count',0),allTime=load('allTime',0),rebirths=load('rebirths',0);
+var clickPower=load('clickPower',1),multiplier=load('multiplier',1);
+var autoCPS=load('autoCPS',0),critChance=load('critChance',5);
+var critMult=load('critMult',3);
+var goldenLevel=load('goldenLevel',0),goldenHits=load('goldenHits',0),biggestCrit=load('biggestCrit',0);
+var dailyStreak=load('dailyStreak',0),lastLogin=load('lastLogin',null);
+var godMode=false;
+var upgradeLevel=load('upgradeLevel',0),autoLevel=load('autoLevel',0);
+var autoBoostLevel=load('autoBoostLevel',0),luckLevel=load('luckLevel',0);
+var achievements=load('achievements',{});
+var supLevels=load('supLevels',{});
+var comboExtraBonus=load('comboExtraBonus',0);
+var streakBoostExtra=load('streakBoostExtra',0);
+var prestigeTokens=load('prestigeTokens',0);
+var prestigeBought=load('prestigeBought',{});
+var qdUnlocked=load('qdUnlocked',false);
+var hadFrenzy=false;
+
+// ── FORMAT (emoji tiers) ──
+var EMOJI_TIERS=[
+  {v:1e15,s:'\uD83D\uDC0D',n:'Snakes'},{v:1e18,s:'\uD83E\uDD86',n:'Ducks'},
+  {v:1e21,s:'\uD83E\uDD81',n:'Lions'},{v:1e24,s:'\uD83D\uDC09',n:'Dragons'},
+  {v:1e27,s:'\uD83C\uDF0B',n:'Volcanoes'},{v:1e30,s:'\uD83D\uDC80',n:'Deaths'},
+  {v:1e33,s:'\uD83E\uDE90',n:'Planets'},{v:1e36,s:'\u2B50',n:'Stars'},
+  {v:1e39,s:'\uD83C\uDF0C',n:'Universes'},{v:1e42,s:'\uD83D\uDC38',n:'Borjies'},
+];
+function fmt(n){
+  if(isNaN(n)||n<0)return'0';
+  for(var i=EMOJI_TIERS.length-1;i>=0;i--){if(n>=EMOJI_TIERS[i].v)return(n/EMOJI_TIERS[i].v).toFixed(2)+EMOJI_TIERS[i].s;}
+  if(n>=1e12)return(n/1e12).toFixed(2)+'T';
+  if(n>=1e9)return(n/1e9).toFixed(2)+'B';
+  if(n>=1e6)return(n/1e6).toFixed(2)+'M';
+  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
+  return Math.floor(n).toLocaleString();
+}
+function checkQD(){
+  if(!qdUnlocked&&allTime>=1e15){qdUnlocked=true;save('qdUnlocked',true);showToast('QD reached! Currency = Snakes!','gold');showMilestone('QUADRILLION!','You now measure in Snakes');spawnConfetti();}
+  var badge='',lit=false;
+  for(var i=EMOJI_TIERS.length-1;i>=0;i--){if(count>=EMOJI_TIERS[i].v){badge=EMOJI_TIERS[i].s+' '+EMOJI_TIERS[i].n+' Era';lit=true;break;}}
+  var el=document.getElementById('tierBadge');el.textContent=badge;el.className=lit?'lit':'';
+}
 
 // ── DAILY STREAK ──
 (function(){
-  const today=new Date().toDateString();
-  if(!lastLogin){dailyStreak=1;save('lastLogin',today);save('dailyStreak',dailyStreak);showToast('🌅 Day 1 streak!','green');}
+  var today=new Date().toDateString();
+  if(!lastLogin){dailyStreak=1;save('lastLogin',today);save('dailyStreak',dailyStreak);}
   else if(lastLogin!==today){
-    const yest=new Date(Date.now()-86400000).toDateString();
-    if(lastLogin===yest){dailyStreak++;showToast(`🔥 ${dailyStreak}-day streak! Bonus x${(1+(dailyStreak-1)*.05).toFixed(2)}`,'gold');}
-    else{dailyStreak=1;showToast('💔 Streak reset!','red');}
+    var yest=new Date(Date.now()-86400000).toDateString();
+    if(lastLogin===yest){dailyStreak++;showToast(dailyStreak+'-day streak!','gold');}
+    else{dailyStreak=1;showToast('Streak reset!','red');}
     save('lastLogin',today);save('dailyStreak',dailyStreak);
   }
   if(dailyStreak>1){document.getElementById('streakChip').style.display='flex';document.getElementById('streakDisplay').textContent=dailyStreak;}
 })();
-const getStreakBonus=()=>1+(dailyStreak-1)*.05;
+function getStreakBonus(){return 1+(dailyStreak-1)*(0.05+streakBoostExtra);}
 
 // ── ACHIEVEMENTS ──
-const ACH_DEF=[
-  {id:'first_click',icon:'🖱',title:'First Click!',   desc:'Click for the first time',     check:()=>allTime>=1},
-  {id:'combo10',    icon:'🔥',title:'On Fire',         desc:'Reach a 10x combo',            check:()=>combo>=10},
-  {id:'first_crit', icon:'💥',title:'Critical!',       desc:'Land your first crit',         check:()=>biggestCrit>0},
-  {id:'golden',     icon:'✨',title:'Gold Rush',        desc:'Click the Golden Borjie',      check:()=>goldenHits>=1},
-  {id:'rebirth1',   icon:'🌀',title:'Reborn',           desc:'Perform your first rebirth',   check:()=>rebirths>=1},
-  {id:'rebirth10',  icon:'🌊',title:'Serial Rebirther', desc:'Reach 10 rebirths',            check:()=>rebirths>=10},
-  {id:'clicks1k',   icon:'🏅',title:'Clickaholic',      desc:'1,000 total clicks',           check:()=>allTime>=1000},
-  {id:'clicks10k',  icon:'🥈',title:'Click Machine',    desc:'10,000 total clicks',          check:()=>allTime>=10000},
-  {id:'clicks100k', icon:'🥇',title:'Borjie Master',    desc:'100,000 total clicks',         check:()=>allTime>=100000},
-  {id:'autobuyer',  icon:'🤖',title:'Automation',       desc:'Buy your first Auto Clicker',  check:()=>autoLevel>=1},
+var combo=0;
+var ACH_DEF=[
+  {id:'first_click',icon:'\uD83D\uDDB1',title:'First Click!',   desc:'Click once',               check:function(){return allTime>=1;}},
+  {id:'combo10',    icon:'\uD83D\uDD25',title:'On Fire',         desc:'10x combo',                check:function(){return combo>=10;}},
+  {id:'first_crit', icon:'\uD83D\uDCA5',title:'Critical!',       desc:'First crit',               check:function(){return biggestCrit>0;}},
+  {id:'golden',     icon:'\u2728',      title:'Gold Rush',        desc:'Click Golden Borjie',      check:function(){return goldenHits>=1;}},
+  {id:'rebirth1',   icon:'\uD83C\uDF00',title:'Reborn',           desc:'First rebirth',            check:function(){return rebirths>=1;}},
+  {id:'rebirth10',  icon:'\uD83C\uDF0A',title:'Serial Rebirther', desc:'10 rebirths',              check:function(){return rebirths>=10;}},
+  {id:'clicks1k',   icon:'\uD83C\uDFC5',title:'Clickaholic',      desc:'1K total clicks',          check:function(){return allTime>=1000;}},
+  {id:'clicks10k',  icon:'\uD83E\uDD48',title:'Click Machine',    desc:'10K total clicks',         check:function(){return allTime>=10000;}},
+  {id:'clicks100k', icon:'\uD83E\uDD47',title:'Borjie Master',    desc:'100K total clicks',        check:function(){return allTime>=100000;}},
+  {id:'autobuyer',  icon:'\uD83E\uDD16',title:'Automation',       desc:'First Auto Clicker',       check:function(){return autoLevel>=1;}},
+  {id:'frenzy1',    icon:'\u26A1',      title:'Frenzy!',           desc:'Experience Click Frenzy',  check:function(){return hadFrenzy;}},
+  {id:'sup1',       icon:'\uD83D\uDCAA',title:'Special Buyer',    desc:'Buy a Special Upgrade',    check:function(){var k=Object.keys(supLevels);for(var i=0;i<k.length;i++){if(supLevels[k[i]]>0)return true;}return false;}},
 ];
 function renderAchievements(){
-  const list=document.getElementById('achievementList');list.innerHTML='';
-  ACH_DEF.forEach(a=>{
-    const div=document.createElement('div');
+  var list=document.getElementById('achievementList');list.innerHTML='';
+  ACH_DEF.forEach(function(a){
+    var div=document.createElement('div');
     div.className='achievement-item '+(achievements[a.id]?'unlocked':'locked');
-    div.innerHTML=`<span class="ach-icon">${a.icon}</span><div class="ach-text"><div class="ach-title">${a.title}</div><div class="ach-desc">${a.desc}</div></div>`;
+    div.innerHTML='<span class="ach-icon">'+a.icon+'</span><div class="ach-text"><div class="ach-title">'+a.title+'</div><div class="ach-desc">'+a.desc+'</div></div>';
     list.appendChild(div);
   });
 }
 function checkAchievements(){
-  ACH_DEF.forEach(a=>{
-    if(!achievements[a.id]&&a.check()){achievements[a.id]=true;save('achievements',achievements);showToast(`🏆 ${a.title}`,'gold');spawnConfetti();renderAchievements();}
+  ACH_DEF.forEach(function(a){
+    if(!achievements[a.id]&&a.check()){achievements[a.id]=true;save('achievements',achievements);showToast('Trophy: '+a.title,'gold');spawnConfetti();renderAchievements();}
   });
 }
 
 // ── RANKS ──
-const RANKS=[
-  {name:'Clanky Clicker',icon:'🔩',min:0},{name:'Amateur Clicker',icon:'🖱',min:1000},
-  {name:'Special Spammer',icon:'💬',min:5000},{name:'Advanced Yapper',icon:'🗣',min:25000},
-  {name:'Borjie Bonker',icon:'💀',min:50000},{name:'Borjie Baiter',icon:'🎣',min:100000},
-  {name:'Grand Borjie',icon:'👑',min:500000},{name:'Cosmic Borjie',icon:'🌌',min:1000000},
+var RANKS=[
+  {name:'Clanky Clicker',icon:'\uD83D\uDD29',min:0},{name:'Amateur Clicker',icon:'\uD83D\uDDB1',min:1000},
+  {name:'Special Spammer',icon:'\uD83D\uDCAC',min:5000},{name:'Advanced Yapper',icon:'\uD83D\uDDE3',min:25000},
+  {name:'Borjie Bonker',icon:'\uD83D\uDC80',min:50000},{name:'Borjie Baiter',icon:'\uD83C\uDFA3',min:100000},
+  {name:'Grand Borjie',icon:'\uD83D\uDC51',min:500000},{name:'Cosmic Borjie',icon:'\uD83C\uDF0C',min:1000000},
 ];
-let currentRankIdx=0;
+var currentRankIdx=0;
 function updateRank(){
-  let idx=0;
-  for(let i=RANKS.length-1;i>=0;i--){if(allTime>=RANKS[i].min){idx=i;break;}}
+  var idx=0;
+  for(var i=RANKS.length-1;i>=0;i--){if(allTime>=RANKS[i].min){idx=i;break;}}
   if(idx!==currentRankIdx){
-    currentRankIdx=idx;const r=RANKS[idx];
+    currentRankIdx=idx;var r=RANKS[idx];
     document.getElementById('rankTitle').textContent=r.name;
     document.getElementById('rankIcon').textContent=r.icon;
-    showToast(`⬆️ Rank Up: ${r.icon} ${r.name}!`,'purple');
-    spawnConfetti();showMilestone(`${r.icon} RANK UP!`,`You are now: ${r.name}`);
+    showToast('Rank Up: '+r.name+'!','purple');
+    spawnConfetti();showMilestone('RANK UP!','You are now: '+r.name);
   }
-  const r=RANKS[idx],next=RANKS[idx+1];
+  var r=RANKS[idx],next=RANKS[idx+1];
   if(next){
-    const pct=Math.min(100,((allTime-r.min)/(next.min-r.min))*100);
+    var pct=Math.min(100,((allTime-r.min)/(next.min-r.min))*100);
     document.getElementById('rankProgressFill').style.width=pct+'%';
-    document.getElementById('rankProgressLabel').textContent=`${fmt(next.min-allTime)} to ${next.name}`;
-  } else {
+    document.getElementById('rankProgressLabel').textContent=fmt(next.min-allTime)+' to '+next.name;
+  }else{
     document.getElementById('rankProgressFill').style.width='100%';
     document.getElementById('rankProgressLabel').textContent='MAX RANK!';
   }
 }
 
-// ── FORMAT ──
-function fmt(n){if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(2)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.floor(n).toLocaleString();}
-
 // ── COSTS ──
-const upgCostFn   =lvl=>Math.floor(1000*Math.pow(1.5,lvl));
-const autoCostFn  =lvl=>Math.floor(500 *Math.pow(1.8,lvl));
-const boostCostFn =lvl=>Math.floor(5000*Math.pow(2.0,lvl));
-const luckCostFn  =lvl=>Math.floor(3000*Math.pow(1.9,lvl));
-const goldCostFn  =lvl=>Math.floor(8000*Math.pow(2.2,lvl));
+function upgCostFn(lvl){return Math.floor(1000*Math.pow(1.5,lvl));}
+function autoCostFn(lvl){return Math.floor(500*Math.pow(1.8,lvl));}
+function boostCostFn(lvl){return Math.floor(5000*Math.pow(2.0,lvl));}
+function luckCostFn(lvl){return Math.floor(3000*Math.pow(1.9,lvl));}
+function goldCostFn(lvl){return Math.floor(8000*Math.pow(2.2,lvl));}
 
-// ── REBIRTH HELPERS ──
-const maxPossible=()=>Math.floor(count/REBIRTH_COST);
+// ── SCALING REBIRTH ──
+function rebirthCost(r){return Math.floor(10000*Math.pow(1.5,r));}
+function costForN(n){var t=0;for(var i=0;i<n;i++)t+=rebirthCost(rebirths+i);return t;}
+function maxAffordable(){var t=0,n=0;while(n<9999){var nx=rebirthCost(rebirths+n);if(t+nx>count)break;t+=nx;n++;}return n;}
 
+// ── SPECIAL UPGRADES (20) ──
+var SUPS=[
+  {id:'tapmaster',name:'Tap Master',    icon:'\u261D',rar:'common',desc:'+10 click power',        max:5,base:500,    mult:4, fn:function(){clickPower+=10;}},
+  {id:'slapper',  name:'Mega Slapper',  icon:'\uD83D\uDC4B',rar:'common',desc:'+50 click power', max:5,base:2000,   mult:5, fn:function(){clickPower+=50;}},
+  {id:'bonker',   name:'Borjie Bonker', icon:'\uD83D\uDC80',rar:'rare',  desc:'x10 click power', max:5,base:5000,   mult:8, fn:function(){clickPower=clickPower*10;}},
+  {id:'godhand',  name:'God Hand',      icon:'\u270B',rar:'epic',  desc:'x50 click power',        max:5,base:50000,  mult:12,fn:function(){clickPower=clickPower*50;}},
+  {id:'titanfist',name:'Titan Fist',    icon:'\uD83E\uDD1C',rar:'legend',desc:'x500 click power!',max:5,base:500000, mult:20,fn:function(){clickPower=clickPower*500;}},
+  {id:'roboclick',name:'Robo Clicker',  icon:'\uD83E\uDD16',rar:'common',desc:'+10 CPS',          max:5,base:3000,   mult:5, fn:function(){autoCPS+=10;}},
+  {id:'clickfarm',name:'Click Farm',    icon:'\uD83C\uDFED',rar:'rare',  desc:'+50 CPS',          max:5,base:25000,  mult:7, fn:function(){autoCPS+=50;}},
+  {id:'hyperbot', name:'Hyper Bot',     icon:'\u2699',rar:'epic',  desc:'+500 CPS',               max:5,base:200000, mult:10,fn:function(){autoCPS+=500;}},
+  {id:'omnifarm', name:'Omni Farm',     icon:'\uD83C\uDF10',rar:'legend',desc:'+5000 CPS!!',      max:5,base:2000000,mult:18,fn:function(){autoCPS+=5000;}},
+  {id:'lucky',    name:'Lucky Charm',   icon:'\uD83C\uDF40',rar:'common',desc:'+10% crit',        max:5,base:1500,   mult:4, fn:function(){critChance=Math.min(critChance+10,95);}},
+  {id:'critking', name:'Crit King',     icon:'\uD83D\uDC51',rar:'rare',  desc:'+20% crit +x2 dmg',max:5,base:30000,  mult:8, fn:function(){critChance=Math.min(critChance+20,95);critMult+=2;}},
+  {id:'deathstk', name:'Death Strike',  icon:'\uD83D\uDCA5',rar:'epic',  desc:'+30% crit +x5 dmg',max:5,base:250000, mult:14,fn:function(){critChance=Math.min(critChance+30,95);critMult+=5;}},
+  {id:'goldmag',  name:'Gold Magnet',   icon:'\uD83E\uDDF2',rar:'rare',  desc:'Boost golden',     max:5,base:10000,  mult:6, fn:function(){goldenLevel+=3;}},
+  {id:'goldgod',  name:'Gold God',      icon:'\uD83D\uDC9B',rar:'epic',  desc:'Huge golden boost',max:5,base:100000, mult:11,fn:function(){goldenLevel+=10;}},
+  {id:'rbsurge',  name:'Rebirth Surge', icon:'\uD83C\uDF00',rar:'rare',  desc:'x3 multiplier',   max:5,base:20000,  mult:9, fn:function(){multiplier=multiplier*3;}},
+  {id:'cosmic',   name:'Cosmic Power',  icon:'\uD83C\uDF0C',rar:'legend',desc:'x100 mult!!!',     max:5,base:1000000,mult:25,fn:function(){multiplier=multiplier*100;}},
+  {id:'combobst', name:'Combo Burst',   icon:'\uD83D\uDD25',rar:'rare',  desc:'Stronger combo',   max:5,base:15000,  mult:7, fn:function(){comboExtraBonus+=0.2;}},
+  {id:'strkbst',  name:'Streak Boost',  icon:'\uD83D\uDCC5',rar:'common',desc:'+10% streak bonus',max:5,base:8000,   mult:5, fn:function(){streakBoostExtra+=0.1;}},
+  {id:'dblaut',   name:'Auto Doubler',  icon:'\u26A1',rar:'epic',  desc:'x2 all CPS',             max:5,base:150000, mult:12,fn:function(){autoCPS=Math.max(1,autoCPS)*2;}},
+  {id:'megamult', name:'Mega Multiplier',icon:'\uD83D\uDE80',rar:'legend',desc:'x25 mult + x5 CPS',max:5,base:5000000,mult:30,fn:function(){multiplier=multiplier*25;autoCPS=Math.max(1,autoCPS)*5;}},
+];
+function supCost(def,lvl){return Math.floor(def.base*Math.pow(def.mult,lvl));}
+function renderSups(){
+  var grid=document.getElementById('supGrid');grid.innerHTML='';
+  SUPS.forEach(function(def){
+    var lvl=supLevels[def.id]||0;
+    var maxed=lvl>=def.max;
+    var cost=maxed?0:supCost(def,lvl);
+    var locked=!maxed&&count<cost;
+    var card=document.createElement('div');
+    card.className='sup-card rar-'+def.rar+(maxed?' sup-maxed':locked?' sup-locked':'');
+    card.innerHTML='<span class="sup-lv">'+lvl+'/'+def.max+(maxed?' ok':'')+'</span>'+
+      '<span class="sup-icon">'+def.icon+'</span>'+
+      '<div class="sup-name">'+def.name+'</div>'+
+      '<div class="sup-desc">'+def.desc+'</div>'+
+      '<div class="sup-cost">'+(maxed?'MAXED':(locked?'locked: ':'cost: ')+fmt(cost))+'</div>';
+    if(!maxed&&!locked){
+      (function(d){
+        card.addEventListener('click',function(){buySup(d);});
+        card.addEventListener('touchend',function(e){e.preventDefault();buySup(d);});
+      })(def);
+    }
+    grid.appendChild(card);
+  });
+}
+function buySup(def){
+  var lvl=supLevels[def.id]||0;
+  if(lvl>=def.max)return;
+  var cost=supCost(def,lvl);
+  if(count<cost)return;
+  count-=cost;supLevels[def.id]=lvl+1;def.fn();
+  save('count',count);save('supLevels',supLevels);
+  save('clickPower',clickPower);save('autoCPS',autoCPS);
+  save('critChance',critChance);save('critMult',critMult);
+  save('goldenLevel',goldenLevel);save('multiplier',multiplier);
+  save('comboExtraBonus',comboExtraBonus);save('streakBoostExtra',streakBoostExtra);
+  var type=def.rar==='legend'?'gold':def.rar==='epic'?'purple':'green';
+  showToast(def.name+' Lv'+(lvl+1)+'!',type);
+  if(def.rar==='legend')spawnConfetti();
+  startAutoClicker();renderSups();updateUI();
+}
+
+// ── PRESTIGE SHOP ──
+var P_ITEMS=[
+  {id:'pcrit', icon:'\uD83D\uDCA5',name:'Eternal Crits',    desc:'+15% crit forever',       cost:2,fn:function(){critChance=Math.min(critChance+15,95);save('critChance',critChance);}},
+  {id:'pclick',icon:'\uD83D\uDC46',name:'Soul of Clicking', desc:'x5 click power forever',  cost:3,fn:function(){clickPower=clickPower*5;save('clickPower',clickPower);}},
+  {id:'pauto', icon:'\uD83E\uDD16',name:'Auto Inheritance', desc:'+100 CPS forever',        cost:3,fn:function(){autoCPS+=100;save('autoCPS',autoCPS);}},
+  {id:'pgold', icon:'\u2728',      name:'Golden Touch',     desc:'Golden spawns 3x more',   cost:2,fn:function(){goldenLevel+=20;save('goldenLevel',goldenLevel);}},
+  {id:'pstart',icon:'\uD83D\uDE80',name:'Head Start',       desc:'Start with 50K each life',cost:4,fn:function(){count+=50000;save('count',count);}},
+  {id:'pmega', icon:'\uD83C\uDF0C',name:'Cosmic Inheritance',desc:'x10 mult forever',       cost:8,fn:function(){multiplier=multiplier*10;save('multiplier',multiplier);}},
+];
+function renderPrestige(){
+  document.getElementById('tokenDisp').textContent='Tokens: '+prestigeTokens;
+  var list=document.getElementById('prestigeList');list.innerHTML='';
+  P_ITEMS.forEach(function(item){
+    var bought=prestigeBought[item.id];
+    var div=document.createElement('div');
+    div.className='p-item'+(bought?' p-bought':'');
+    div.innerHTML='<span class="p-icon">'+item.icon+'</span><div><div class="p-name">'+item.name+'</div><div class="p-desc">'+item.desc+'</div></div><div class="p-cost">'+(bought?'Owned':'Tokens: '+item.cost)+'</div>';
+    if(!bought){
+      (function(it){
+        div.addEventListener('click',function(){
+          if(prestigeTokens<it.cost){showToast('Need '+it.cost+' tokens!','red');return;}
+          prestigeTokens-=it.cost;prestigeBought[it.id]=true;
+          save('prestigeTokens',prestigeTokens);save('prestigeBought',prestigeBought);
+          it.fn();showToast(it.name+' unlocked!','gold');spawnConfetti();renderPrestige();updateUI();
+        });
+      })(item);
+    }
+    list.appendChild(div);
+  });
+}
+document.getElementById('prestigeOpenBtn').addEventListener('click',function(){
+  renderPrestige();document.getElementById('prestigeModal').classList.add('active');
+});
+
+// ── REBIRTH ──
 function doRebirths(n){
   if(n<=0)return;
-  count -= n*REBIRTH_COST;
-  rebirths += n;
-  multiplier *= Math.pow(2,n);
-  save('count',count);save('rebirths',rebirths);save('multiplier',multiplier);
+  var tc=costForN(n);if(count<tc)return;
+  count-=tc;rebirths+=n;multiplier=multiplier*Math.pow(2,n);prestigeTokens+=n;
+  save('count',count);save('rebirths',rebirths);save('multiplier',multiplier);save('prestigeTokens',prestigeTokens);
   document.getElementById('clickButton').classList.add('prestige-flash');
-  setTimeout(()=>document.getElementById('clickButton').classList.remove('prestige-flash'),1000);
+  setTimeout(function(){document.getElementById('clickButton').classList.remove('prestige-flash');},1000);
   spawnConfetti();
-  const label=n===1?'🌀 REBORN!':`🌀 ${n}× REBIRTHS!`;
-  showMilestone(label,`Multiplier is now ×${fmt(multiplier)}`);
-  showToast(n===1?`🌀 Rebirth! ×${fmt(multiplier)}`:`🌀 ${n}× Rebirths! ×${fmt(multiplier)}`,'purple');
-  startAutoClicker();
-  updateUI();
+  showMilestone(n===1?'REBORN!':n+'x REBIRTHS!','Multiplier x'+fmt(multiplier)+' +'+n+' Token'+(n>1?'s':''));
+  showToast((n===1?'Rebirth':''+n+'x Rebirths')+'! x'+fmt(multiplier),'purple');
+  startAutoClicker();renderPrestige();updateUI();
 }
+document.getElementById('rebirth1Btn').addEventListener('click',function(){
+  var c=rebirthCost(rebirths);if(count<c)return;
+  doRebirths(1);
+});
+document.getElementById('rebirth10Btn').addEventListener('click',function(){
+  var c=costForN(10);if(count<c)return;
+  doRebirths(10);
+});
+document.getElementById('rebirthMaxBtn').addEventListener('click',function(){
+  var n=maxAffordable();if(n<=0)return;
+  doRebirths(n);
+});
 
 // ── UPDATE UI ──
 function updateUI(){
@@ -481,155 +693,179 @@ function updateUI(){
   document.getElementById('rebirths').textContent=rebirths;
   document.getElementById('perClickDisplay').textContent=fmt(Math.floor(clickPower*multiplier*getStreakBonus()));
   document.getElementById('cpsDisplay').textContent=fmt(autoCPS*multiplier);
-  document.getElementById('statClickPower').textContent=clickPower;
+  document.getElementById('statClickPower').textContent=fmt(clickPower);
   document.getElementById('statMult').textContent=fmt(multiplier);
   document.getElementById('statCrit').textContent=critChance;
-  document.getElementById('statCPS').textContent=autoCPS;
+  document.getElementById('statCritDmg').textContent=critMult;
+  document.getElementById('statCPS').textContent=fmt(autoCPS);
   document.getElementById('statGolden').textContent=goldenHits;
   document.getElementById('statBigCrit').textContent=fmt(biggestCrit);
 
-  // Upgrade buttons
   document.getElementById('upgradeClickPower').disabled=count<upgCostFn(upgradeLevel);
   document.getElementById('upgradeAutoClicker').disabled=count<autoCostFn(autoLevel);
   document.getElementById('upgradeAutoBoost').disabled=count<boostCostFn(autoBoostLevel);
   document.getElementById('upgradeLuck').disabled=count<luckCostFn(luckLevel);
   document.getElementById('upgradeGolden').disabled=count<goldCostFn(goldenLevel);
-  document.getElementById('upgradeCost').textContent=`Cost: ${fmt(upgCostFn(upgradeLevel))}`;
-  document.getElementById('autoCost').textContent=`Cost: ${fmt(autoCostFn(autoLevel))} (+1 CPS)`;
-  document.getElementById('autoBoostCost').textContent=`Cost: ${fmt(boostCostFn(autoBoostLevel))} (+2 CPS)`;
-  document.getElementById('luckCost').textContent=`Cost: ${fmt(luckCostFn(luckLevel))} → ${critChance+5}%`;
-  document.getElementById('goldenCost').textContent=`Cost: ${fmt(goldCostFn(goldenLevel))}`;
+  document.getElementById('upgradeCost').textContent='Cost: '+fmt(upgCostFn(upgradeLevel));
+  document.getElementById('autoCost').textContent='Cost: '+fmt(autoCostFn(autoLevel))+' (+1 CPS)';
+  document.getElementById('autoBoostCost').textContent='Cost: '+fmt(boostCostFn(autoBoostLevel))+' (+2 CPS)';
+  document.getElementById('luckCost').textContent='Cost: '+fmt(luckCostFn(luckLevel))+' -> '+(critChance+5)+'%';
+  document.getElementById('goldenCost').textContent='Cost: '+fmt(goldCostFn(goldenLevel));
 
-  // ── Rebirth button logic ──
-  const maxN=maxPossible();
-  const can1 =count>=REBIRTH_COST;
-  const can10=count>=REBIRTH_COST*10;
+  var c1=rebirthCost(rebirths),c10=costForN(10),maxN=maxAffordable(),cMax=costForN(maxN);
+  document.getElementById('rebirth1Btn').disabled=count<c1;
+  document.getElementById('rebirth10Btn').disabled=count<c10;
+  document.getElementById('rebirthMaxBtn').disabled=count<c1;
+  document.getElementById('rebirthNextLabel').textContent='(next: '+fmt(c1)+')';
+  document.getElementById('rb1Sub').textContent=count>=c1?'Cost: '+fmt(c1):'Need '+fmt(c1);
+  document.getElementById('rb10Sub').textContent=count>=c10?'Cost: '+fmt(c10):'Need '+fmt(c10);
+  document.getElementById('rbMaxSub').textContent=maxN>0?maxN+'x Cost: '+fmt(cMax):'Need '+fmt(c1);
+  document.getElementById('previewMult1').textContent='x'+fmt(multiplier*2);
+  document.getElementById('previewMultMax').textContent=maxN>0?'x'+fmt(multiplier*Math.pow(2,maxN))+' ('+maxN+'x)':'---';
 
-  document.getElementById('rebirth1Btn').disabled=!can1;
-  document.getElementById('rebirth10Btn').disabled=!can10;
-  document.getElementById('rebirthMaxBtn').disabled=!can1;
-
-  document.getElementById('rb1Sub').textContent  = can1  ? `Cost: ${fmt(REBIRTH_COST)}`    : `Need ${fmt(REBIRTH_COST)}`;
-  document.getElementById('rb10Sub').textContent = can10 ? `Cost: ${fmt(REBIRTH_COST*10)}` : `Need ${fmt(REBIRTH_COST*10)}`;
-  document.getElementById('rbMaxSub').textContent= maxN>0 ? `${maxN}× · Cost: ${fmt(maxN*REBIRTH_COST)}` : `Need ${fmt(REBIRTH_COST)}`;
-
-  // Live multiplier preview
-  document.getElementById('previewMult1').textContent   = `×${fmt(multiplier*2)}`;
-  document.getElementById('previewMultMax').textContent = maxN>0 ? `×${fmt(multiplier*Math.pow(2,maxN))} (${maxN}×)` : '—';
-
-  updateRank();
-  checkAchievements();
+  renderSups();updateRank();checkAchievements();checkQD();
 }
 
-// ── REBIRTH EVENT LISTENERS ──
-document.getElementById('rebirth1Btn').addEventListener('click',()=>{
-  if(count<REBIRTH_COST)return;
-  if(confirm(`🌀 Rebirth ×1?\nCosts ${fmt(REBIRTH_COST)} clicks\nMultiplier: ×${fmt(multiplier)} → ×${fmt(multiplier*2)}`)) doRebirths(1);
-});
-
-document.getElementById('rebirth10Btn').addEventListener('click',()=>{
-  if(count<REBIRTH_COST*10)return;
-  if(confirm(`🌀 Rebirth ×10?\nCosts ${fmt(REBIRTH_COST*10)} clicks\nMultiplier: ×${fmt(multiplier)} → ×${fmt(multiplier*Math.pow(2,10))}`)) doRebirths(10);
-});
-
-document.getElementById('rebirthMaxBtn').addEventListener('click',()=>{
-  const n=maxPossible();
-  if(n<=0)return;
-  if(confirm(`🌌 MAX Rebirth — ${n}× rebirths!\nCosts ${fmt(n*REBIRTH_COST)} clicks\nMultiplier: ×${fmt(multiplier)} → ×${fmt(multiplier*Math.pow(2,n))}`)) doRebirths(n);
-});
-
 // ── AUTO CLICKER ──
-let autoInterval=null;
+var autoInterval=null;
 function startAutoClicker(){
   if(autoInterval)clearInterval(autoInterval);
   if(autoCPS<=0&&!godMode)return;
-  autoInterval=setInterval(()=>{const g=godMode?9999:autoCPS*multiplier;count+=g;allTime+=g;save('count',count);save('allTime',allTime);updateUI();},1000);
+  autoInterval=setInterval(function(){var g=godMode?9999:autoCPS*multiplier;count+=g;allTime+=g;save('count',count);save('allTime',allTime);updateUI();},1000);
 }
 
 // ── COMBO ──
-let combo=0,comboTimer=null,streakTO=null;
-const COMBO_TIMEOUT=1800,MAX_COMBO=20;
+var comboTimer=null,streakTO=null;
+var COMBO_TIMEOUT=1800,MAX_COMBO=20;
 function updateCombo(){
   combo=Math.min(combo+1,MAX_COMBO);
   clearTimeout(comboTimer);clearTimeout(streakTO);
   document.getElementById('streakBarFill').style.width='100%';
-  const start=Date.now();
-  function decay(){const f=1-(Date.now()-start)/COMBO_TIMEOUT;if(f>0){document.getElementById('streakBarFill').style.width=(f*100)+'%';streakTO=setTimeout(decay,30);}else document.getElementById('streakBarFill').style.width='0%';}
+  var start=Date.now();
+  function decay(){var f=1-(Date.now()-start)/COMBO_TIMEOUT;if(f>0){document.getElementById('streakBarFill').style.width=(f*100)+'%';streakTO=setTimeout(decay,30);}else document.getElementById('streakBarFill').style.width='0%';}
   decay();
-  comboTimer=setTimeout(()=>{combo=0;document.getElementById('comboDisplay').textContent='';document.getElementById('comboBarFill').style.width='0%';},COMBO_TIMEOUT);
+  comboTimer=setTimeout(function(){combo=0;document.getElementById('comboDisplay').textContent='';document.getElementById('comboBarFill').style.width='0%';},COMBO_TIMEOUT);
   document.getElementById('comboBarFill').style.width=((combo/MAX_COMBO)*100)+'%';
   if(combo>=2){
-    const el=document.getElementById('comboDisplay');
-    el.textContent=`${combo}× COMBO!`;
+    var el=document.getElementById('comboDisplay');
+    el.textContent=combo+'x COMBO!';
     el.classList.remove('combo-pop');void el.offsetWidth;el.classList.add('combo-pop');
     el.style.color=combo>=15?'#c84bff':combo>=10?'#ff4500':'#ffd700';
-  } else document.getElementById('comboDisplay').textContent='';
+  }else document.getElementById('comboDisplay').textContent='';
 }
 
+// ── CLICK FRENZY ──
+var frenzyActive=false,frenzyTO=null,frenzyDecTO=null;
+function startFrenzy(){
+  if(frenzyActive)return;
+  frenzyActive=true;hadFrenzy=true;
+  document.getElementById('frenzyLabel').style.display='block';
+  document.getElementById('frenzyBarWrap').style.display='block';
+  document.getElementById('frenzyFill').style.width='100%';
+  showToast('CLICK FRENZY! x10 for 10 seconds!','gold');
+  showMilestone('CLICK FRENZY!','x10 clicks for 10 seconds!');
+  var s=Date.now();
+  function dec(){var f=1-(Date.now()-s)/10000;if(f>0){document.getElementById('frenzyFill').style.width=(f*100)+'%';frenzyDecTO=setTimeout(dec,50);}else endFrenzy();}
+  dec();frenzyTO=setTimeout(endFrenzy,10000);
+}
+function endFrenzy(){
+  frenzyActive=false;clearTimeout(frenzyTO);clearTimeout(frenzyDecTO);
+  document.getElementById('frenzyLabel').style.display='none';
+  document.getElementById('frenzyBarWrap').style.display='none';
+  showToast('Frenzy ended!','red');
+}
+function scheduleFrenzy(){setTimeout(function(){startFrenzy();scheduleFrenzy();},90000+Math.random()*90000);}
+scheduleFrenzy();
+
+// ── BACKGROUND BORJIES ──
+function spawnBgBorjie(){
+  var el=document.createElement('div');el.className='bg-borjie';
+  var sz=30+Math.random()*60,dur=8+Math.random()*14;
+  el.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'vw;bottom:-80px;--dur:'+dur+'s;--rot:'+(Math.random()*720-360)+'deg;';
+  document.body.appendChild(el);setTimeout(function(){el.remove();},(dur+1)*1000);
+}
+setInterval(spawnBgBorjie,2200);
+
 // ── CLICK HANDLER ──
-let clickCooldown=false;
-document.getElementById('clickButton').addEventListener('click',e=>{
+var clickCooldown=false;
+function doClick(cx,cy){
   if(clickCooldown&&!godMode)return;
   clickCooldown=true;
-  const isCrit=Math.random()*100<critChance;
-  const base=Math.floor(clickPower*multiplier*getStreakBonus());
-  let gained=Math.floor(base*(1+combo*.1));
-  if(isCrit){gained*=3;if(gained>biggestCrit){biggestCrit=gained;save('biggestCrit',biggestCrit);}spawnCritEffect(e.clientX,e.clientY,gained);}
+  var isCrit=Math.random()*100<critChance;
+  var base=Math.floor(clickPower*multiplier*getStreakBonus());
+  var cBonus=1+combo*(0.1+comboExtraBonus/MAX_COMBO);
+  var fMult=frenzyActive?10:1;
+  var gained=Math.floor(base*cBonus*fMult);
+  if(isCrit){gained=Math.floor(gained*critMult);if(gained>biggestCrit){biggestCrit=gained;save('biggestCrit',biggestCrit);}spawnCritEffect(cx,cy,gained);}
   count+=gained;allTime+=gained;save('count',count);save('allTime',allTime);
-  updateCombo();spawnParticles(e.clientX,e.clientY,isCrit);spawnFloatText(e.clientX,e.clientY,`+${fmt(gained)}`,isCrit?'#ffd700':'#fff');spawnFlyingBorjie(e.clientX,e.clientY);
-  updateUI();setTimeout(()=>{clickCooldown=false;},godMode?0:60);
-});
+  updateCombo();spawnParticles(cx,cy,isCrit);
+  spawnFloatText(cx,cy,'+'+fmt(gained)+(frenzyActive?'!':''),isCrit?'#ffd700':frenzyActive?'#ff6600':'#fff');
+  spawnFlyingBorjie(cx,cy);updateUI();
+  setTimeout(function(){clickCooldown=false;},godMode?0:60);
+}
+document.getElementById('clickButton').addEventListener('click',function(e){doClick(e.clientX,e.clientY);});
+document.getElementById('clickButton').addEventListener('touchend',function(e){e.preventDefault();var t=e.changedTouches[0];doClick(t.clientX,t.clientY);});
 
 // ── UPGRADE HANDLERS ──
-document.getElementById('upgradeClickPower').addEventListener('click',()=>{const c=upgCostFn(upgradeLevel);if(count>=c){count-=c;clickPower++;upgradeLevel++;save('count',count);save('clickPower',clickPower);save('upgradeLevel',upgradeLevel);showToast(`👆 Power: ${clickPower}`,'green');updateUI();}});
-document.getElementById('upgradeAutoClicker').addEventListener('click',()=>{const c=autoCostFn(autoLevel);if(count>=c){count-=c;autoCPS++;autoLevel++;save('count',count);save('autoCPS',autoCPS);save('autoLevel',autoLevel);startAutoClicker();showToast('🤖 +1 CPS','green');updateUI();}});
-document.getElementById('upgradeAutoBoost').addEventListener('click',()=>{const c=boostCostFn(autoBoostLevel);if(count>=c){count-=c;autoCPS+=2;autoBoostLevel++;save('count',count);save('autoCPS',autoCPS);save('autoBoostLevel',autoBoostLevel);startAutoClicker();showToast('🚀 +2 CPS','green');updateUI();}});
-document.getElementById('upgradeLuck').addEventListener('click',()=>{const c=luckCostFn(luckLevel);if(count>=c){count-=c;critChance=Math.min(critChance+5,80);luckLevel++;save('count',count);save('critChance',critChance);save('luckLevel',luckLevel);showToast(`🍀 Crit: ${critChance}%`,'purple');updateUI();}});
-document.getElementById('upgradeGolden').addEventListener('click',()=>{const c=goldCostFn(goldenLevel);if(count>=c){count-=c;goldenLevel++;save('count',count);save('goldenLevel',goldenLevel);showToast('✨ Golden upgraded!','gold');updateUI();}});
+document.getElementById('upgradeClickPower').addEventListener('click',function(){var c=upgCostFn(upgradeLevel);if(count>=c){count-=c;clickPower++;upgradeLevel++;save('count',count);save('clickPower',clickPower);save('upgradeLevel',upgradeLevel);showToast('Power: '+clickPower,'green');updateUI();}});
+document.getElementById('upgradeAutoClicker').addEventListener('click',function(){var c=autoCostFn(autoLevel);if(count>=c){count-=c;autoCPS++;autoLevel++;save('count',count);save('autoCPS',autoCPS);save('autoLevel',autoLevel);startAutoClicker();showToast('+1 CPS','green');updateUI();}});
+document.getElementById('upgradeAutoBoost').addEventListener('click',function(){var c=boostCostFn(autoBoostLevel);if(count>=c){count-=c;autoCPS+=2;autoBoostLevel++;save('count',count);save('autoCPS',autoCPS);save('autoBoostLevel',autoBoostLevel);startAutoClicker();showToast('+2 CPS','green');updateUI();}});
+document.getElementById('upgradeLuck').addEventListener('click',function(){var c=luckCostFn(luckLevel);if(count>=c){count-=c;critChance=Math.min(critChance+5,80);luckLevel++;save('count',count);save('critChance',critChance);save('luckLevel',luckLevel);showToast('Crit: '+critChance+'%','purple');updateUI();}});
+document.getElementById('upgradeGolden').addEventListener('click',function(){var c=goldCostFn(goldenLevel);if(count>=c){count-=c;goldenLevel++;save('count',count);save('goldenLevel',goldenLevel);showToast('Golden upgraded!','gold');updateUI();}});
 
 // ── GOLDEN BORJIE ──
-let goldenVisible=false;
+var goldenVisible=false;
 function spawnGoldenBorjie(){
   if(goldenVisible)return;goldenVisible=true;
-  const el=document.getElementById('goldenBorjie');
+  var el=document.getElementById('goldenBorjie');
   el.style.left=(Math.random()*(window.innerWidth-100)+20)+'px';
   el.style.top=(Math.random()*(window.innerHeight-150)+60)+'px';
   el.style.display='block';
-  showToast('✨ Golden Borjie appeared!','gold');
-  const to=setTimeout(()=>{el.style.display='none';goldenVisible=false;},8000);
-  el.onclick=()=>{clearTimeout(to);const b=Math.floor(count*.1+500)*(1+goldenLevel*.5);count+=b;allTime+=b;goldenHits++;save('goldenHits',goldenHits);save('count',count);save('allTime',allTime);el.style.display='none';goldenVisible=false;showToast(`✨ +${fmt(b)}!`,'gold');spawnConfetti();updateUI();};
+  showToast('Golden Borjie appeared!','gold');
+  var to=setTimeout(function(){el.style.display='none';goldenVisible=false;},8000);
+  el.onclick=function(){clearTimeout(to);var b=Math.floor(count*.1+500)*(1+goldenLevel*.5);count+=b;allTime+=b;goldenHits++;save('goldenHits',goldenHits);save('count',count);save('allTime',allTime);el.style.display='none';goldenVisible=false;showToast('+'+fmt(b)+'!','gold');spawnConfetti();updateUI();};
 }
-function scheduleGolden(){const i=Math.max(15000,40000-goldenLevel*5000)+Math.random()*20000;setTimeout(()=>{spawnGoldenBorjie();scheduleGolden();},i);}
+function scheduleGolden(){var i=Math.max(15000,40000-goldenLevel*5000)+Math.random()*20000;setTimeout(function(){spawnGoldenBorjie();scheduleGolden();},i);}
 scheduleGolden();
 
 // ── MILESTONES ──
-const MILESTONES=[100,1000,5000,10000,50000,100000,500000,1000000];
-let lastMilestone=load('lastMilestone',0);
-function checkMilestones(){for(const m of MILESTONES){if(allTime>=m&&m>lastMilestone){lastMilestone=m;save('lastMilestone',lastMilestone);showMilestone(`🎉 ${fmt(m)} CLICKS!`,'Keep grinding, Borjie!');spawnConfetti();break;}}}
+var MILESTONES=[100,1000,5000,10000,50000,100000,500000,1000000];
+var lastMilestone=load('lastMilestone',0);
+function checkMilestones(){for(var i=0;i<MILESTONES.length;i++){var m=MILESTONES[i];if(allTime>=m&&m>lastMilestone){lastMilestone=m;save('lastMilestone',lastMilestone);showMilestone(fmt(m)+' CLICKS!','Keep grinding, Borjie!');spawnConfetti();break;}}}
 
 // ── VISUAL EFFECTS ──
-function showMilestone(title,text){const b=document.getElementById('milestoneBanner');document.getElementById('milestoneTitle').textContent=title;document.getElementById('milestoneText').textContent=text;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000);}
-function showToast(msg,type){const t=document.createElement('div');t.className=`toast ${type||'green'}`;t.textContent=msg;document.getElementById('toastContainer').appendChild(t);setTimeout(()=>{t.style.animation='toastOut .4s ease forwards';setTimeout(()=>t.remove(),400);},2800);}
-function spawnConfetti(){const cols=['#ff4500','#ffd700','#4cff91','#00cfff','#c84bff','#ff69b4'];for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.cssText=`left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'2px'};--dur:${1.5+Math.random()*1.5}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;document.body.appendChild(c);setTimeout(()=>c.remove(),3500);}}
-function spawnParticles(x,y,isCrit){const n=isCrit?20:8;const cols=isCrit?['#ffd700','#ffa500','#ff6600']:['#ff4500','#ff8844','#fff','#ffcc44'];for(let i=0;i<n;i++){const p=document.createElement('div'),a=(Math.PI*2/n)*i+Math.random()*.5,d=60+Math.random()*(isCrit?120:60),sz=isCrit?6+Math.random()*8:4+Math.random()*5;p.className='particle';p.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*cols.length)]};--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d-30}px;--dur:${.6+Math.random()*.4}s;`;document.body.appendChild(p);setTimeout(()=>p.remove(),1000);}if(isCrit){const f=document.createElement('div');f.className='crit-flash';document.body.appendChild(f);setTimeout(()=>f.remove(),400);document.body.classList.add('shaking');setTimeout(()=>document.body.classList.remove('shaking'),300);}}
-function spawnFloatText(x,y,text,color){const el=document.createElement('div');el.className='float-text';el.style.cssText=`left:${x-20}px;top:${y-20}px;color:${color};`;el.textContent=text;document.body.appendChild(el);setTimeout(()=>el.remove(),1200);}
-function spawnCritEffect(x,y,amount){spawnFloatText(x-40,y-50,`💥 CRIT! +${fmt(amount)}`,'#ffd700');}
-function spawnFlyingBorjie(x,y){const img=document.createElement('div');img.style.cssText=`position:fixed;left:${x-20}px;top:${y-20}px;width:40px;height:40px;border-radius:50%;background-image:url('IMG_8904.JPG');background-size:cover;pointer-events:none;z-index:999;`;document.body.appendChild(img);img.animate([{transform:'scale(1) translateY(0)',opacity:1},{transform:'scale(1.3) translateY(-80px)',opacity:0}],{duration:900,easing:'ease-out',fill:'forwards'}).onfinish=()=>img.remove();}
+function showMilestone(title,text){var b=document.getElementById('milestoneBanner');document.getElementById('milestoneTitle').textContent=title;document.getElementById('milestoneText').textContent=text;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');setTimeout(function(){b.classList.remove('show');},3000);}
+function showToast(msg,type){var t=document.createElement('div');t.className='toast '+(type||'green');t.textContent=msg;document.getElementById('toastContainer').appendChild(t);setTimeout(function(){t.style.animation='toastOut .4s ease forwards';setTimeout(function(){t.remove();},400);},2800);}
+function spawnConfetti(){var cols=['#ff4500','#ffd700','#4cff91','#00cfff','#c84bff','#ff69b4'];for(var i=0;i<60;i++){var c=document.createElement('div');c.className='confetti-piece';c.style.cssText='left:'+Math.random()*100+'vw;background:'+cols[Math.floor(Math.random()*cols.length)]+';border-radius:'+(Math.random()>.5?'50%':'2px')+';--dur:'+(1.5+Math.random()*1.5)+'s;width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;';document.body.appendChild(c);setTimeout(function(){c.remove();},3500);}}
+function spawnParticles(x,y,isCrit){var n=isCrit?20:8;var cols=isCrit?['#ffd700','#ffa500','#ff6600']:['#ff4500','#ff8844','#fff','#ffcc44'];for(var i=0;i<n;i++){var p=document.createElement('div'),a=(Math.PI*2/n)*i+Math.random()*.5,d=60+Math.random()*(isCrit?120:60),sz=isCrit?6+Math.random()*8:4+Math.random()*5;p.className='particle';p.style.cssText='left:'+x+'px;top:'+y+'px;width:'+sz+'px;height:'+sz+'px;background:'+cols[Math.floor(Math.random()*cols.length)]+';--tx:'+Math.cos(a)*d+'px;--ty:'+(Math.sin(a)*d-30)+'px;--dur:'+(0.6+Math.random()*.4)+'s;';document.body.appendChild(p);setTimeout(function(){p.remove();},1000);}if(isCrit){var f=document.createElement('div');f.className='crit-flash';document.body.appendChild(f);setTimeout(function(){f.remove();},400);document.body.classList.add('shaking');setTimeout(function(){document.body.classList.remove('shaking');},300);}}
+function spawnFloatText(x,y,text,color){var el=document.createElement('div');el.className='float-text';el.style.cssText='left:'+(x-20)+'px;top:'+(y-20)+'px;color:'+color+';';el.textContent=text;document.body.appendChild(el);setTimeout(function(){el.remove();},1200);}
+function spawnCritEffect(x,y,amount){spawnFloatText(x-40,y-50,'CRIT! +'+fmt(amount),'#ffd700');}
+function spawnFlyingBorjie(x,y){var img=document.createElement('div');img.style.cssText='position:fixed;left:'+(x-20)+'px;top:'+(y-20)+'px;width:40px;height:40px;border-radius:50%;background-image:url(\'IMG_8904.JPG\');background-size:cover;pointer-events:none;z-index:999;';document.body.appendChild(img);img.animate([{transform:'scale(1) translateY(0)',opacity:1},{transform:'scale(1.3) translateY(-80px)',opacity:0}],{duration:900,easing:'ease-out',fill:'forwards'}).onfinish=function(){img.remove();};}
 
 // ── ADMIN ──
-document.getElementById('adminLogin').addEventListener('click',()=>{const u=prompt('Username:'),p=prompt('Password:');if(u==='Gussy123'&&p==='gus')document.getElementById('adminPanel').style.display='block';else showToast('❌ Access Denied!','red');});
-function giveClicks(a){count+=a;allTime+=a;save('count',count);save('allTime',allTime);showToast(`✅ +${fmt(a)} clicks!`,'green');spawnConfetti();updateUI();}
-function toggleGodMode(){godMode=!godMode;showToast(godMode?'⚡ GOD MODE ON!':'⚡ God Mode off',godMode?'gold':'red');startAutoClicker();}
-function resetGame(){if(confirm('💥 RESET EVERYTHING?')){localStorage.clear();location.reload();}}
-function closeAdmin(){document.getElementById('adminPanel').style.display='none';}
-document.getElementById('infoButton').addEventListener('click',()=>document.getElementById('infoModal').classList.add('active'));
-document.getElementById('resetProgress').addEventListener('click',()=>{if(confirm('Reset EVERYTHING?')){localStorage.clear();location.reload();}});
+document.getElementById('adminLogin').addEventListener('click',function(){var u=prompt('Username:'),p=prompt('Password:');if(u==='Gussy123'&&p==='gus')document.getElementById('adminPanel').style.display='block';else showToast('Access Denied!','red');});
+function giveClicks(a){count+=a;allTime+=a;save('count',count);save('allTime',allTime);showToast('+'+fmt(a)+' clicks!','green');spawnConfetti();updateUI();}
+function toggleGodMode(){godMode=!godMode;showToast(godMode?'GOD MODE ON!':'God Mode off',godMode?'gold':'red');startAutoClicker();}
+function resetGame(){localStorage.clear();location.reload();}
+var _resetClicks=0,_resetTO=null;
+document.getElementById('resetProgress').addEventListener('click',function(){
+  _resetClicks++;clearTimeout(_resetTO);
+  if(_resetClicks>=3){_resetClicks=0;resetGame();return;}
+  var left=3-_resetClicks;
+  showToast('Click reset '+left+' more time'+(left>1?'s':'')+' to confirm!','red');
+  _resetTO=setTimeout(function(){_resetClicks=0;},3000);
+});
 
 // ── INIT ──
+function closeAdmin(){document.getElementById('adminPanel').style.display='none';}
+document.getElementById('infoButton').addEventListener('click',function(){document.getElementById('infoModal').classList.add('active');});
 startAutoClicker();
 renderAchievements();
+renderSups();
+renderPrestige();
 updateUI();
-setInterval(()=>{checkMilestones();checkAchievements();},1000);
+setInterval(function(){checkMilestones();checkAchievements();checkQD();},1000);
+
 </script>
 </body>
 </html>
