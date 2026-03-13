@@ -49,6 +49,19 @@ body{font-family:'Nunito',sans-serif;background:#050510;color:white;min-height:1
 .mb:nth-child(5){height:5px;animation-delay:.05s;}
 @keyframes mbDance{from{transform:scaleY(.3);}to{transform:scaleY(1);}}
 
+/* ── TAP TO START SPLASH (mobile/iOS) ── */
+#tapSplash{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1a0533,#050510);cursor:pointer;transition:opacity .6s ease;}
+#tapSplash.hidden{opacity:0;pointer-events:none;}
+.tap-avatar{width:130px;height:130px;border-radius:50%;background-image:url('IMG_8904.JPG');background-size:cover;border:4px solid rgba(255,215,0,.7);box-shadow:0 0 60px rgba(255,100,0,.5),0 0 120px rgba(200,75,255,.3);animation:tapFloat 2s ease-in-out infinite alternate,tapGlow 2s ease infinite;margin-bottom:28px;}
+@keyframes tapFloat{from{transform:translateY(0) scale(1);}to{transform:translateY(-12px) scale(1.05);}}
+@keyframes tapGlow{0%,100%{box-shadow:0 0 40px rgba(255,100,0,.4),0 0 80px rgba(200,75,255,.2);}50%{box-shadow:0 0 70px rgba(255,215,0,.6),0 0 140px rgba(200,75,255,.4);}}
+.tap-title{font-family:'Bangers',cursive;font-size:3.2rem;letter-spacing:5px;background:linear-gradient(135deg,#ff4500,#ffd700,#c84bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px;animation:shimmerT 2s linear infinite;background-size:200% auto;}
+@keyframes shimmerT{to{background-position:200% center;}}
+.tap-sub{color:rgba(255,255,255,.55);font-size:1rem;font-weight:600;letter-spacing:1px;margin-bottom:36px;}
+.tap-btn{font-family:'Bangers',cursive;font-size:1.6rem;letter-spacing:3px;color:#000;background:linear-gradient(135deg,#ffd700,#ff8800);padding:16px 48px;border-radius:50px;border:none;cursor:pointer;animation:tapPulse .9s ease-in-out infinite alternate;box-shadow:0 0 30px rgba(255,215,0,.5);}
+@keyframes tapPulse{from{transform:scale(1);box-shadow:0 0 20px rgba(255,215,0,.4);}to{transform:scale(1.06);box-shadow:0 0 40px rgba(255,215,0,.8);}}
+.tap-note{color:rgba(255,255,255,.25);font-size:.78rem;margin-top:16px;letter-spacing:1px;}
+
 /* ── SCROLL HINT ── */
 .scroll-hint{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:100;text-align:center;opacity:.4;transition:opacity .5s;pointer-events:none;}
 .scroll-hint span{font-size:.7rem;letter-spacing:2px;color:rgba(255,255,255,.5);display:block;margin-bottom:6px;}
@@ -170,6 +183,15 @@ body{font-family:'Nunito',sans-serif;background:#050510;color:white;min-height:1
 </style>
 </head>
 <body>
+
+<!-- iOS-safe tap to start -->
+<div id="tapSplash">
+  <div class="tap-avatar"></div>
+  <div class="tap-title">BORJIE</div>
+  <div class="tap-sub">Creator · Clicker Enthusiast · Professional Yapper</div>
+  <button class="tap-btn">▶ TAP TO ENTER</button>
+  <div class="tap-note">🎵 Music will play</div>
+</div>
 
 <div class="bg-anim"></div>
 <canvas id="starfield"></canvas>
@@ -338,12 +360,13 @@ document.querySelectorAll('.card').forEach(function(card){
   card.addEventListener('mouseleave',function(){card.style.transform='';card.style.transition='transform .5s ease';});
 });
 
-// ── MUSIC ──
+// ── MUSIC + TAP SPLASH ──
 var music=document.getElementById('bgMusic');
 var playing=false;
 var mIcon=document.getElementById('mIcon');
 var mBars=document.getElementById('mBars');
 var mLabel=document.getElementById('mLabel');
+var splash=document.getElementById('tapSplash');
 
 function setUI(isPlaying){
   playing=isPlaying;
@@ -353,25 +376,35 @@ function setUI(isPlaying){
   bars.forEach(function(b){b.className=isPlaying?'mb active':'mb';});
 }
 
-// Muted autoplay is always allowed — unmute instantly after playback starts
-music.muted=true;
-music.volume=0.6;
-music.play().then(function(){
-  music.muted=false;
-  setUI(true);
-}).catch(function(){
-  setUI(false);
-  function startOnInteract(){
+function dismissSplash(){
+  music.volume=0.6;
+  music.play().then(function(){setUI(true);}).catch(function(){setUI(false);});
+  splash.classList.add('hidden');
+  setTimeout(function(){splash.style.display='none';},700);
+}
+
+// On desktop: try silent autoplay, skip splash if it works
+var isDesktop=!(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+if(isDesktop){
+  music.muted=true;
+  music.volume=0.6;
+  music.play().then(function(){
     music.muted=false;
-    music.play().then(function(){setUI(true);}).catch(function(){});
-  }
-  document.addEventListener('click',startOnInteract,{passive:true,once:true});
-  document.addEventListener('touchstart',startOnInteract,{passive:true,once:true});
-});
+    setUI(true);
+    splash.style.display='none';
+  }).catch(function(){
+    // Desktop blocked too — show splash
+    setUI(false);
+  });
+}
+
+// Tap/click on splash dismisses and starts music (works on iOS)
+splash.addEventListener('click',dismissSplash);
+splash.addEventListener('touchend',function(e){e.preventDefault();dismissSplash();},{passive:false});
 
 document.getElementById('musicPlayer').addEventListener('click',function(){
   if(playing){music.pause();setUI(false);}
-  else{music.play().then(function(){setUI(true);}).catch(function(){});}
+  else{music.volume=0.6;music.play().then(function(){setUI(true);}).catch(function(){});}
 });
 </script>
 </body>
