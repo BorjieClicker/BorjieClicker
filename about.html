@@ -214,10 +214,8 @@ body{font-family:'Nunito',sans-serif;background:#050510;color:white;min-height:1
 
 <div class="scroll-hint" id="scrollHint"><span>SCROLL</span><div class="scroll-arrow"></div></div>
 
-<!-- 🎵 Update "background.mp3" to match your actual file name in the repo -->
-<audio id="bgMusic" loop preload="auto">
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
+<!-- 🎵 Cycling through all 5 tracks -->
+<audio id="bgMusic" preload="auto"></audio>
 
 <div id="lb">
   <button class="lbc" id="lbClose">✕</button>
@@ -360,9 +358,10 @@ document.querySelectorAll('.card').forEach(function(card){
   card.addEventListener('mouseleave',function(){card.style.transform='';card.style.transition='transform .5s ease';});
 });
 
-// ── MUSIC + TAP SPLASH ──
+// ── MUSIC + TAP SPLASH (cycling tracks) ──
+var TRACKS=['music.mp3','music1.mp3','music2.mp3','music3.mp3','music4.mp3'];
+var trackIdx=0,playing=false;
 var music=document.getElementById('bgMusic');
-var playing=false;
 var mIcon=document.getElementById('mIcon');
 var mBars=document.getElementById('mBars');
 var mLabel=document.getElementById('mLabel');
@@ -371,21 +370,32 @@ var splash=document.getElementById('tapSplash');
 function setUI(isPlaying){
   playing=isPlaying;
   mIcon.className='music-icon'+(isPlaying?' spinning':'');
-  mLabel.textContent=isPlaying?'♬ BORJIE FM':'▶ PLAY';
-  var bars=mBars.querySelectorAll('.mb');
-  bars.forEach(function(b){b.className=isPlaying?'mb active':'mb';});
+  mLabel.textContent=isPlaying?('♬ Track '+(trackIdx+1)+'/'+TRACKS.length):'▶ PLAY';
+  mBars.querySelectorAll('.mb').forEach(function(b){b.className=isPlaying?'mb active':'mb';});
 }
+function loadTrack(idx,andPlay){
+  trackIdx=((idx%TRACKS.length)+TRACKS.length)%TRACKS.length;
+  music.src=TRACKS[trackIdx];
+  music.volume=0.6;
+  music.load();
+  if(andPlay){music.play().then(function(){setUI(true);}).catch(function(){setUI(false);});}
+}
+music.addEventListener('ended',function(){loadTrack(trackIdx+1,true);});
 
 function dismissSplash(){
-  music.volume=0.6;
-  music.play().then(function(){setUI(true);}).catch(function(){setUI(false);});
+  loadTrack(0,true);
   splash.classList.add('hidden');
   setTimeout(function(){splash.style.display='none';},700);
 }
 
-// Show splash on ALL devices — one tap/click is the only 100% reliable way
+// Show splash on ALL devices — guaranteed to work everywhere
 splash.addEventListener('click',dismissSplash);
 splash.addEventListener('touchend',function(e){e.preventDefault();dismissSplash();},{passive:false});
+
+document.getElementById('musicPlayer').addEventListener('click',function(){
+  if(playing){music.pause();setUI(false);}
+  else{music.play().then(function(){setUI(true);}).catch(function(){});}
+});
 
 document.getElementById('musicPlayer').addEventListener('click',function(){
   if(playing){music.pause();setUI(false);}
