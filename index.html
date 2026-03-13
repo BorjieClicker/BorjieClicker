@@ -46,6 +46,26 @@ body{
 .top-left-btn{position:fixed;top:14px;left:14px;background:rgba(0,120,255,.25);border:1px solid rgba(0,120,255,.5);color:white;padding:9px 14px;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;z-index:200;}
 .reset-btn{position:fixed;bottom:14px;left:14px;background:rgba(255,0,0,.2);border:1px solid rgba(255,0,0,.4);color:white;padding:9px 14px;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;z-index:200;}
 
+/* ── MUSIC PLAYER ── */
+.music-player{position:fixed;bottom:14px;right:14px;z-index:200;display:flex;align-items:center;gap:9px;background:rgba(0,0,0,.55);backdrop-filter:blur(14px);border:1px solid rgba(255,215,0,.3);border-radius:50px;padding:9px 16px;cursor:pointer;transition:border-color .2s,box-shadow .2s;user-select:none;}
+.music-player:hover{border-color:rgba(255,215,0,.7);box-shadow:0 0 20px rgba(255,215,0,.2);}
+.mp-icon{font-size:1.1rem;transition:transform .3s;}
+.mp-icon.spinning{animation:mpSpin 3s linear infinite;}
+@keyframes mpSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.mp-label{font-size:.75rem;font-weight:700;color:rgba(255,215,0,.85);max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mp-controls{display:flex;gap:4px;}
+.mp-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);width:22px;height:22px;border-radius:50%;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.mp-btn:hover{background:rgba(255,255,255,.25);color:white;}
+.mp-bars{display:flex;gap:2px;align-items:flex-end;height:14px;}
+.mpb{width:3px;background:var(--gold);border-radius:2px;}
+.mpb.active{animation:mpbDance .6s ease-in-out infinite alternate;}
+.mpb:nth-child(1){height:5px;animation-delay:0s;}
+.mpb:nth-child(2){height:12px;animation-delay:.1s;}
+.mpb:nth-child(3){height:8px;animation-delay:.2s;}
+.mpb:nth-child(4){height:12px;animation-delay:.15s;}
+.mpb:nth-child(5){height:4px;animation-delay:.05s;}
+@keyframes mpbDance{from{transform:scaleY(.3);}to{transform:scaleY(1);}}
+
 /* ── WRAPPER ── */
 .game-wrapper{
   position:relative;z-index:1;width:100%;max-width:1100px;
@@ -245,6 +265,24 @@ body{
 
 <button class="top-left-btn" id="adminLogin">🔑 Admin</button>
 <button class="reset-btn" id="resetProgress">🗑 Reset</button>
+
+<!-- Music Player -->
+<audio id="bgMusic" preload="auto"></audio>
+<div class="music-player" id="musicPlayer">
+  <div class="mp-icon" id="mpIcon">🎵</div>
+  <div>
+    <div class="mp-label" id="mpLabel">♬ Borjie F.M</div>
+  </div>
+  <div class="mp-controls">
+    <button class="mp-btn" id="mpPrev" title="Previous">◀</button>
+    <button class="mp-btn" id="mpPlayPause" title="Play/Pause">▶</button>
+    <button class="mp-btn" id="mpNext" title="Next">▶▶</button>
+  </div>
+  <div class="mp-bars" id="mpBars">
+    <div class="mpb"></div><div class="mpb"></div><div class="mpb"></div>
+    <div class="mpb"></div><div class="mpb"></div>
+  </div>
+</div>
 
 <div id="goldenBorjie"></div>
 <div id="toastContainer"></div>
@@ -835,7 +873,50 @@ document.getElementById('resetProgress').addEventListener('click',function(){
 });
 document.getElementById('infoButton').addEventListener('click',function(){document.getElementById('infoModal').classList.add('active');});
 
-// ── INIT ──
+// ── MUSIC PLAYER (optional, cycling) ──
+var TRACKS=['music.mp3','music1.mp3','music2.mp3','music3.mp3','music4.mp3'];
+var TRACK_NAMES=['Track 1','Track 2','Track 3','Track 4','Track 5'];
+var trackIdx=0,musicPlaying=false;
+var bgMusic=document.getElementById('bgMusic');
+var mpIcon=document.getElementById('mpIcon');
+var mpLabel=document.getElementById('mpLabel');
+var mpBars=document.getElementById('mpBars');
+var mpPlayPause=document.getElementById('mpPlayPause');
+
+function setMusicUI(isPlaying){
+  musicPlaying=isPlaying;
+  mpIcon.className='mp-icon'+(isPlaying?' spinning':'');
+  mpPlayPause.textContent=isPlaying?'⏸':'▶';
+  mpLabel.textContent=isPlaying?('♬ Track '+(trackIdx+1)+' / '+TRACKS.length):'♬ Borjie F.M';
+  mpBars.querySelectorAll('.mpb').forEach(function(b){b.className=isPlaying?'mpb active':'mpb';});
+}
+function loadTrack(idx,andPlay){
+  trackIdx=((idx%TRACKS.length)+TRACKS.length)%TRACKS.length;
+  bgMusic.src=TRACKS[trackIdx];
+  bgMusic.load();
+  if(andPlay){bgMusic.play().then(function(){setMusicUI(true);}).catch(function(){setMusicUI(false);});}
+  else{setMusicUI(musicPlaying);}
+}
+bgMusic.addEventListener('ended',function(){loadTrack(trackIdx+1,true);});
+document.getElementById('mpPlayPause').addEventListener('click',function(e){
+  e.stopPropagation();
+  if(musicPlaying){bgMusic.pause();setMusicUI(false);}
+  else{
+    if(!bgMusic.src||bgMusic.src===location.href)loadTrack(0,true);
+    else bgMusic.play().then(function(){setMusicUI(true);}).catch(function(){});
+  }
+});
+document.getElementById('mpPrev').addEventListener('click',function(e){e.stopPropagation();loadTrack(trackIdx-1,musicPlaying);});
+document.getElementById('mpNext').addEventListener('click',function(e){e.stopPropagation();loadTrack(trackIdx+1,musicPlaying);});
+// Click the player body to toggle play too
+document.getElementById('musicPlayer').addEventListener('click',function(){
+  if(musicPlaying){bgMusic.pause();setMusicUI(false);}
+  else{
+    if(!bgMusic.src||bgMusic.src===location.href)loadTrack(0,true);
+    else bgMusic.play().then(function(){setMusicUI(true);}).catch(function(){});
+  }
+});
+
 startAutoClicker();
 renderAchievements();
 renderSups();
