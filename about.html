@@ -383,22 +383,7 @@ function dismissSplash(){
   setTimeout(function(){splash.style.display='none';},700);
 }
 
-// On desktop: try silent autoplay, skip splash if it works
-var isDesktop=!(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
-if(isDesktop){
-  music.muted=true;
-  music.volume=0.6;
-  music.play().then(function(){
-    music.muted=false;
-    setUI(true);
-    splash.style.display='none';
-  }).catch(function(){
-    // Desktop blocked too — show splash
-    setUI(false);
-  });
-}
-
-// Tap/click on splash dismisses and starts music (works on iOS)
+// Show splash on ALL devices — one tap/click is the only 100% reliable way
 splash.addEventListener('click',dismissSplash);
 splash.addEventListener('touchend',function(e){e.preventDefault();dismissSplash();},{passive:false});
 
