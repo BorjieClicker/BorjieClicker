@@ -353,20 +353,20 @@ function setUI(isPlaying){
   bars.forEach(function(b){b.className=isPlaying?'mb active':'mb';});
 }
 
-// Try autoplay right away
+// Muted autoplay is always allowed — unmute instantly after playback starts
+music.muted=true;
 music.volume=0.6;
-music.play().then(function(){setUI(true);}).catch(function(){
+music.play().then(function(){
+  music.muted=false;
+  setUI(true);
+}).catch(function(){
   setUI(false);
-  // Play on first user interaction
   function startOnInteract(){
+    music.muted=false;
     music.play().then(function(){setUI(true);}).catch(function(){});
-    document.removeEventListener('click',startOnInteract);
-    document.removeEventListener('touchstart',startOnInteract);
-    document.removeEventListener('keydown',startOnInteract);
   }
   document.addEventListener('click',startOnInteract,{passive:true,once:true});
   document.addEventListener('touchstart',startOnInteract,{passive:true,once:true});
-  document.addEventListener('keydown',startOnInteract,{once:true});
 });
 
 document.getElementById('musicPlayer').addEventListener('click',function(){
